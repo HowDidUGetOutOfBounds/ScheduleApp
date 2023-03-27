@@ -57,7 +57,7 @@
 
     <Button
         android:id="@+id/goBackButton"
-        android:text="<--"
+        android:text="less--"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -69,7 +69,7 @@
 
     <Button
         android:id="@+id/goNextButton"
-        android:text="-->"
+        android:text="--more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
