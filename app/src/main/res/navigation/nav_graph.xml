@@ -22,15 +22,15 @@
         android:label="loginFragment"
         tools:layout="@layout/fragment_login" >
         <action
-            android:id="@+id/action_loginFragment_to_scheduleFragment"
-            app:destination="@id/scheduleFragment"
-            app:popUpTo="@id/scheduleFragment" />
-        <action
             android:id="@+id/action_loginFragment_to_registrationFragment"
             app:destination="@id/registrationFragment" />
         <action
             android:id="@+id/action_loginFragment_to_resetFragment"
             app:destination="@id/resetFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_fragmentContainer"
+            app:destination="@id/fragmentContainer"
+            app:popUpTo="@id/fragmentContainer" />
     </fragment>
     <fragment
         android:id="@+id/registrationFragment"

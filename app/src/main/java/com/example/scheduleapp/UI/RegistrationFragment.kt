@@ -67,12 +67,12 @@ class RegistrationFragment : Fragment() {
                     setButtonVisibility()
 
                     if (registration.isSuccessful()) {
-                        Toast.makeText(activity, "Registration success.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "Registered successfully.", Toast.LENGTH_SHORT).show()
                         Log.d("TAG", "Successful registration")
                         view.findNavController()
                             .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
                     } else {
-                        Toast.makeText(activity, "Registration failure.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "Registration failure: ${registration.exception!!.message.toString()}", Toast.LENGTH_SHORT).show()
                         Log.d("TAG", registration.exception!!.message.toString())
                     }
                 }
@@ -91,7 +91,7 @@ class RegistrationFragment : Fragment() {
     fun setButtonVisibility() {
         if (binding.progressBar.visibility == View.GONE) {
             binding.registerButton.isEnabled =
-                !arrayListOf(binding.userEmail.text.toString().trim(), binding.userPassword1.text.toString().trim(), binding.userPassword2.text.toString().trim()).contains("")
+                !(binding.userEmail.text.toString().isBlank() || binding.userPassword1.text.toString().isBlank() || binding.userPassword2.text.toString().isBlank())
         }
     }
 

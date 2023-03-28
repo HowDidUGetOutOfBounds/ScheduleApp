@@ -58,7 +58,7 @@ class ResetFragment : Fragment() {
                     Toast.makeText(activity, "Reset message sent successfully.", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", "Successful send")
                 } else {
-                    Toast.makeText(activity, "Failed to send the reset message.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Failed to send the reset message: ${reset.exception!!.message.toString()}", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", reset.exception!!.message.toString())
                 }
             }
@@ -75,7 +75,7 @@ class ResetFragment : Fragment() {
 
     fun setButtonVisibility() {
         if (binding.progressBar.visibility == View.GONE) {
-            binding.resetButton.isEnabled = (binding.userEmail.text.toString().trim() != "")
+            binding.resetButton.isEnabled = !binding.userEmail.text.toString().isBlank()
         }
     }
 

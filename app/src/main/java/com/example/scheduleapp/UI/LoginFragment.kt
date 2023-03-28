@@ -32,7 +32,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         mAuth = (activity as MainActivity).mAuth
-        mPreferences= (activity as MainActivity).mPreferences
+        mPreferences = (activity as MainActivity).mPreferences
 
         // Inflate the layout for this fragment
         binding = FragmentLoginBinding.inflate(inflater, container, false)
@@ -69,12 +69,12 @@ class LoginFragment : Fragment() {
                 setButtonVisibility()
 
                 if (login.isSuccessful()) {
-                    Toast.makeText(activity, "User Logged in.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Logged in successfully", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", "Successful login")
                     view.findNavController()
-                        .navigate(LoginFragmentDirections.actionLoginFragmentToScheduleFragment())
+                        .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
                 } else {
-                    Toast.makeText(activity, "Failed to log in.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Failed to log in: ${login.exception!!.message.toString()}", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", login.exception!!.message.toString())
                 }
             }
@@ -87,9 +87,7 @@ class LoginFragment : Fragment() {
         if (mAuth.currentUser != null) {
             if (mPreferences.getBoolean("APP_PREFERENCES_STAY", false)) {
                 view?.findNavController()!!
-                    .navigate(LoginFragmentDirections.actionLoginFragmentToScheduleFragment())
-            } else {
-                mAuth.signOut()
+                    .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
             }
         }
     }
@@ -105,7 +103,7 @@ class LoginFragment : Fragment() {
     fun setButtonVisibility() {
         if (binding.progressBar.visibility == View.GONE) {
             binding.loginButton.isEnabled =
-                !arrayListOf(binding.userEmail.text.toString().trim(), binding.userPassword.text.toString().trim()).contains("")
+                !(binding.userEmail.text.toString().isBlank() || binding.userPassword.text.toString().isBlank())
                         && binding.userPassword.text.toString().count() >= (activity as MainActivity).APP_MIN_PASSWORD_LENGTH
         }
     }
