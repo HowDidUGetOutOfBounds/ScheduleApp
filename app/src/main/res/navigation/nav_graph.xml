@@ -10,12 +10,12 @@
         android:id="@+id/fragmentContainer"
         android:name="com.example.scheduleapp.UI.FragmentContainer"
         android:label="FragmentContainer"
-        tools:layout="@layout/fragment_container" />
-    <fragment
-        android:id="@+id/scheduleFragment"
-        android:name="com.example.scheduleapp.UI.ScheduleFragment"
-        android:label="ScheduleFragment"
-        tools:layout="@layout/fragment_schedule" />
+        tools:layout="@layout/fragment_container" >
+        <action
+            android:id="@+id/action_fragmentContainer_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment" />
+    </fragment>
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.scheduleapp.UI.LoginFragment"
