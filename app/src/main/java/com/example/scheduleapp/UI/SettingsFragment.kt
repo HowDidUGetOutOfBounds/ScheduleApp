@@ -57,7 +57,7 @@ class SettingsFragment : Fragment() {
                 .putBoolean("APP_PREFERENCES_STAY", false)
                 .apply()
             view.findNavController()
-                .navigate(FragmentContainerDirections.actionFragmentContainerToLoginFragment())
+                .navigate(SettingsFragmentDirections.actionSettingsFragmentToLoginFragment())
         }
     }
 

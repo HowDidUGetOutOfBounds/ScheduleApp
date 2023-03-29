@@ -12,9 +12,21 @@
         android:label="FragmentContainer"
         tools:layout="@layout/fragment_container" >
         <action
-            android:id="@+id/action_fragmentContainer_to_loginFragment"
+            android:id="@+id/action_fragmentContainer_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.scheduleapp.UI.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_fragmentContainer"
+            app:destination="@id/fragmentContainer" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
