@@ -14,8 +14,6 @@ class MainScreenAdapter(fragment: Fragment):
     override fun createFragment(position: Int): Fragment {
         return when(position)
         {
-            0-> ScheduleFragment.newInstance()
-            1-> SettingsFragment.newInstance()
             else -> ScheduleFragment.newInstance()
         }
     }
