@@ -28,7 +28,6 @@ class ScheduleFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = FragmentScheduleBinding.inflate(layoutInflater)
     }
 
 
@@ -37,7 +36,10 @@ class ScheduleFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_schedule, container, false)
+
+        binding = FragmentScheduleBinding.inflate(layoutInflater)
+        return binding.root
+//        return inflater.inflate(R.layout.fragment_schedule, container, false)
     }
 
     override fun onViewCreated(itemView: View, savedInstanceState: Bundle?) {
