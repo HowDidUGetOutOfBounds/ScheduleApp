@@ -67,20 +67,20 @@ class RegistrationFragment : Fragment() {
                 .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
         }
 
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker())
-        binding.userPassword1.addTextChangedListener(getBlankStringsChecker())
-        binding.userPassword2.addTextChangedListener(getBlankStringsChecker())
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
+        binding.userPassword1.addTextChangedListener(getBlankStringsChecker(binding.userPassword1))
+        binding.userPassword2.addTextChangedListener(getBlankStringsChecker(binding.userPassword2))
 
         binding.registerButton.setOnClickListener {
-            if (binding.userPassword1.text.toString().trim().count() < (activity as MainActivity).APP_MIN_PASSWORD_LENGTH) {
+            if (binding.userPassword1.text.toString().count() < (activity as MainActivity).APP_MIN_PASSWORD_LENGTH) {
                 Toast.makeText(activity, "Your password should be at least 8 characters long", Toast.LENGTH_SHORT).show()
-            } else if (!binding.userPassword1.text.toString().trim().equals(binding.userPassword2.text.toString().trim())) {
+            } else if (!binding.userPassword1.text.toString().equals(binding.userPassword2.text.toString())) {
                 Toast.makeText(activity, "Your passwords don't match. Please confirm your password.", Toast.LENGTH_SHORT).show()
             } else {
                 binding.progressBar.visibility = View.VISIBLE
                 binding.registerButton.isEnabled = false
 
-                mAuth.createUserWithEmailAndPassword(binding.userEmail.text.toString().trim(), binding.userPassword1.text.toString().trim()).addOnCompleteListener{registration->
+                mAuth.createUserWithEmailAndPassword(binding.userEmail.text.toString(), binding.userPassword1.text.toString()).addOnCompleteListener{registration->
                     binding.progressBar.visibility = View.GONE
                     setButtonVisibility()
 
@@ -98,9 +98,15 @@ class RegistrationFragment : Fragment() {
         }
     }
 
-    fun getBlankStringsChecker(): TextWatcher {
+    fun getBlankStringsChecker(textInput: TextInputEditText): TextWatcher {
         return object: TextWatcher {
-            override fun afterTextChanged(s: Editable) { setButtonVisibility() }
+            override fun afterTextChanged(s: Editable) {
+                if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
+                    setButtonVisibility()
+                } else {
+                    textInput.setText(textInput.text.toString().replace(" ", ""))
+                }
+            }
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         }

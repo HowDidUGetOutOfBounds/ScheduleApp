@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.databinding.FragmentLoginBinding
 import com.example.scheduleapp.databinding.FragmentResetBinding
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 
@@ -44,7 +45,7 @@ class ResetFragment : Fragment() {
                 .navigate(ResetFragmentDirections.actionResetFragmentToLoginFragment())
         }
 
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker())
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
 
         binding.resetButton.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
@@ -65,9 +66,15 @@ class ResetFragment : Fragment() {
         }
     }
 
-    fun getBlankStringsChecker(): TextWatcher {
+    fun getBlankStringsChecker(textInput: TextInputEditText): TextWatcher {
         return object: TextWatcher {
-            override fun afterTextChanged(s: Editable) { setButtonVisibility() }
+            override fun afterTextChanged(s: Editable) {
+                if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
+                    setButtonVisibility()
+                } else {
+                    textInput.setText(textInput.text.toString().replace(" ", ""))
+                }
+            }
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         }
