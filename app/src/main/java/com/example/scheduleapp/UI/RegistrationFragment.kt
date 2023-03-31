@@ -10,15 +10,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.SpinnerAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import com.example.scheduleapp.BuildConfig
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class RegistrationFragment : Fragment() {
     lateinit var mAuth: FirebaseAuth
+    lateinit var mDatabase: FirebaseDatabase
     lateinit var mPreferences: SharedPreferences
     private lateinit var binding: FragmentRegistrationBinding
 
@@ -27,6 +32,7 @@ class RegistrationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         mAuth = (activity as MainActivity).mAuth
+        mDatabase = (activity as MainActivity).mDatabase
         mPreferences = (activity as MainActivity).mPreferences
 
         // Inflate the layout for this fragment
@@ -44,6 +50,18 @@ class RegistrationFragment : Fragment() {
                 .apply()
         }
 
+        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), android.R.layout.simple_spinner_item, (activity as MainActivity).APP_GROUP_LIST).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                mPreferences.edit()
+                    .putString("APP_PREFERENCES_GROUP", parent?.getItemAtPosition(position).toString())
+                    .apply()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         binding.loginButton.setOnClickListener {
             view.findNavController()
                 .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
@@ -54,15 +72,15 @@ class RegistrationFragment : Fragment() {
         binding.userPassword2.addTextChangedListener(getBlankStringsChecker())
 
         binding.registerButton.setOnClickListener {
-            if (binding.userPassword1.text.toString().count() < (activity as MainActivity).APP_MIN_PASSWORD_LENGTH) {
+            if (binding.userPassword1.text.toString().trim().count() < (activity as MainActivity).APP_MIN_PASSWORD_LENGTH) {
                 Toast.makeText(activity, "Your password should be at least 8 characters long", Toast.LENGTH_SHORT).show()
-            } else if (!binding.userPassword1.text.toString().equals(binding.userPassword2.text.toString())) {
+            } else if (!binding.userPassword1.text.toString().trim().equals(binding.userPassword2.text.toString().trim())) {
                 Toast.makeText(activity, "Your passwords don't match. Please confirm your password.", Toast.LENGTH_SHORT).show()
             } else {
                 binding.progressBar.visibility = View.VISIBLE
                 binding.registerButton.isEnabled = false
 
-                mAuth.createUserWithEmailAndPassword(binding.userEmail.text.toString(), binding.userPassword1.text.toString()).addOnCompleteListener{registration->
+                mAuth.createUserWithEmailAndPassword(binding.userEmail.text.toString().trim(), binding.userPassword1.text.toString().trim()).addOnCompleteListener{registration->
                     binding.progressBar.visibility = View.GONE
                     setButtonVisibility()
 

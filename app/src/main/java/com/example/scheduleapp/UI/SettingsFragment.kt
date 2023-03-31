@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -51,11 +53,33 @@ class SettingsFragment : Fragment() {
             }
         }
 
+        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), android.R.layout.simple_spinner_item, (activity as MainActivity).APP_GROUP_LIST).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        for (i in 0 until binding.selectGroupSpinner.adapter.count) {
+            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == mPreferences.getString("APP_PREFERENCES_GROUP", "")) {
+                binding.selectGroupSpinner.setSelection(i)
+                break
+            }
+        }
+        binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                mPreferences.edit()
+                    .putString("APP_PREFERENCES_GROUP", parent?.getItemAtPosition(position).toString())
+                    .apply()
+                (activity as MainActivity).title = mPreferences.getString("APP_PREFERENCES_GROUP", resources.getString(R.string.app_name))
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         binding.logoutTrigger.setOnClickListener {
             mAuth.signOut()
             mPreferences.edit()
                 .putBoolean("APP_PREFERENCES_STAY", false)
+                .putString("APP_PREFERENCES_GROUP", null)
                 .apply()
+            (activity as MainActivity).title = resources.getString(R.string.app_name)
+
             view.findNavController()
                 .navigate(SettingsFragmentDirections.actionSettingsFragmentToLoginFragment())
         }
