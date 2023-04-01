@@ -19,6 +19,19 @@
         android:textSize="14sp"
         android:text="Stay signed in?"/>
 
+    <Spinner
+        android:id="@+id/selectGroupSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginEnd="28dp"
+        android:background="@color/white"
+        android:textColor = "@color/black"
+        tools:hintTextColor="@color/white"/>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/userEmail_Layout"
         android:layout_alignParentTop="true"

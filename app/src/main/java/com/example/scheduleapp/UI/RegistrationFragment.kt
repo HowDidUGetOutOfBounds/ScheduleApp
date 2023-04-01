@@ -10,15 +10,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.SpinnerAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import com.example.scheduleapp.BuildConfig
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class RegistrationFragment : Fragment() {
     lateinit var mAuth: FirebaseAuth
+    lateinit var mDatabase: FirebaseDatabase
     lateinit var mPreferences: SharedPreferences
     private lateinit var binding: FragmentRegistrationBinding
 
@@ -27,6 +32,7 @@ class RegistrationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         mAuth = (activity as MainActivity).mAuth
+        mDatabase = (activity as MainActivity).mDatabase
         mPreferences = (activity as MainActivity).mPreferences
 
         // Inflate the layout for this fragment
@@ -44,14 +50,26 @@ class RegistrationFragment : Fragment() {
                 .apply()
         }
 
+        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), android.R.layout.simple_spinner_item, (activity as MainActivity).APP_GROUP_LIST).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                mPreferences.edit()
+                    .putString("APP_PREFERENCES_GROUP", parent?.getItemAtPosition(position).toString())
+                    .apply()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         binding.loginButton.setOnClickListener {
             view.findNavController()
                 .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
         }
 
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker())
-        binding.userPassword1.addTextChangedListener(getBlankStringsChecker())
-        binding.userPassword2.addTextChangedListener(getBlankStringsChecker())
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
+        binding.userPassword1.addTextChangedListener(getBlankStringsChecker(binding.userPassword1))
+        binding.userPassword2.addTextChangedListener(getBlankStringsChecker(binding.userPassword2))
 
         binding.registerButton.setOnClickListener {
             if (binding.userPassword1.text.toString().count() < (activity as MainActivity).APP_MIN_PASSWORD_LENGTH) {
@@ -80,9 +98,15 @@ class RegistrationFragment : Fragment() {
         }
     }
 
-    fun getBlankStringsChecker(): TextWatcher {
+    fun getBlankStringsChecker(textInput: TextInputEditText): TextWatcher {
         return object: TextWatcher {
-            override fun afterTextChanged(s: Editable) { setButtonVisibility() }
+            override fun afterTextChanged(s: Editable) {
+                if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
+                    setButtonVisibility()
+                } else {
+                    textInput.setText(textInput.text.toString().replace(" ", ""))
+                }
+            }
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         }

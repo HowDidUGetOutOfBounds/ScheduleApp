@@ -5,10 +5,6 @@
     tools:context=".MainActivity">
 
     <item
-        android:id="@+id/group_name"
-        android:title="1K9291"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/settings"
         android:icon="@drawable/setting_icon"
         android:title="settings"

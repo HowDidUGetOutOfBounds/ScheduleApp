@@ -19,6 +19,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.databinding.FragmentLoginBinding
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 
@@ -42,6 +43,13 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (mAuth.currentUser != null) {
+            if (mPreferences.getBoolean("APP_PREFERENCES_STAY", false)) {
+                view.findNavController()
+                    .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
+            }
+        }
+
         binding.stayCheck.isChecked = mPreferences.getBoolean("APP_PREFERENCES_STAY", false)
         binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
             mPreferences.edit()
@@ -58,8 +66,8 @@ class LoginFragment : Fragment() {
                 .navigate(LoginFragmentDirections.actionLoginFragmentToResetFragment())
         }
 
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker())
-        binding.userPassword.addTextChangedListener(getBlankStringsChecker())
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
+        binding.userPassword.addTextChangedListener(getBlankStringsChecker(binding.userPassword))
 
         binding.loginButton.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
@@ -81,20 +89,15 @@ class LoginFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        if (mAuth.currentUser != null) {
-            if (mPreferences.getBoolean("APP_PREFERENCES_STAY", false)) {
-                view?.findNavController()!!
-                    .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
-            }
-        }
-    }
-
-    fun getBlankStringsChecker(): TextWatcher {
+    fun getBlankStringsChecker(textInput: TextInputEditText): TextWatcher {
         return object: TextWatcher {
-            override fun afterTextChanged(s: Editable) { setButtonVisibility() }
+            override fun afterTextChanged(s: Editable) {
+                if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
+                    setButtonVisibility()
+                } else {
+                    textInput.setText(textInput.text.toString().replace(" ", ""))
+                }
+            }
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         }
