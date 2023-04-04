@@ -8,52 +8,44 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.ScheduleRecyclerViewAdapter
+import com.example.scheduleapp.data.Day
+import com.example.scheduleapp.data.GroupArray
 import com.example.scheduleapp.data.TestScheduleData
 import com.example.scheduleapp.databinding.FragmentScheduleBinding
-import com.example.scheduleapp.viewmodels.MainActivityViewModel
+import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ScheduleFragment : Fragment() {
-    private val exampleViewModel: MainActivityViewModel by activityViewModels()
-    private var layoutManager: RecyclerView.LayoutManager?=null
-    private var adapter: RecyclerView.Adapter<ScheduleRecyclerViewAdapter.ItemViewHolder>?=null
-
-
+    private val scheduleRecyclerViewAdapter by lazy { ScheduleRecyclerViewAdapter() }
     private lateinit var binding: FragmentScheduleBinding
-
+    val viewModel: ScheduleFragmentViewModel by activityViewModels ()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-
         binding = FragmentScheduleBinding.inflate(layoutInflater)
         return binding.root
-//        return inflater.inflate(R.layout.fragment_schedule, container, false)
     }
 
     override fun onViewCreated(itemView: View, savedInstanceState: Bundle?) {
-        val myScheduleTest = TestScheduleData().loadSchedule()
-        Log.d("TAG", myScheduleTest.toString())
+        var groups: ArrayList<Day>
+        viewModel.getAll()
 
-        super.onViewCreated(itemView, savedInstanceState)
-
-        binding.schedulesRecyclerView.apply {
-            layoutManager=LinearLayoutManager(activity)
-            adapter=ScheduleRecyclerViewAdapter(myScheduleTest)
+        scheduleRecyclerViewAdapter.differ.submitList(TestScheduleData().loadSchedule())
+        binding.apply {
+            schedulesRecyclerView.apply {
+                layoutManager=LinearLayoutManager(activity)
+                adapter=scheduleRecyclerViewAdapter
+            }
         }
-
-     //   binding.schedulesRecyclerView.adapter = ScheduleRecyclerViewAdapter(myScheduleTest)
     }
 
     companion object {

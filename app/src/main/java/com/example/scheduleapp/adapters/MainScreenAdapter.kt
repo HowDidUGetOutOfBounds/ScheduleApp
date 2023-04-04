@@ -19,6 +19,6 @@ class MainScreenAdapter(fragment: Fragment):
     }
 
     companion object{
-        const val PAGE_COUNT = 10
+        const val PAGE_COUNT = 2
     }
 }
