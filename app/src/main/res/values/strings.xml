@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Schedule App</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="app_preferences">APP_PREFERENCES</string>
+    <string name="app_preferences_stay">APP_PREFERENCES_STAY_BOOL</string>
+    <string name="app_preferences_pushes">APP_PREFERENCES_PUSHES_BOOL</string>
+    <string name="app_preferences_group">APP_PREFERENCES_GROUP</string>
+    <string name="app_preferences_group_register">APP_PREFERENCES_GROUP_REGISTER</string>
 </resources>

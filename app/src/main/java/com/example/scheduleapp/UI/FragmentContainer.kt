@@ -1,21 +1,21 @@
 package com.example.scheduleapp.UI
 
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
-import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.MainScreenAdapter
-import com.example.scheduleapp.databinding.ActivityMainBinding
 import com.example.scheduleapp.databinding.FragmentContainerBinding
+import com.example.scheduleapp.viewmodels.OuterViewModel
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FragmentContainer: Fragment() {
-    lateinit var mPreferences: SharedPreferences
+    private val viewModel: OuterViewModel by activityViewModels()
     private lateinit var mainScreenAdapter: MainScreenAdapter
     private lateinit var binding: FragmentContainerBinding
 
@@ -27,8 +27,6 @@ class FragmentContainer: Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mPreferences = (activity as MainActivity).mPreferences
-
         // Inflate the layout for this fragment
         binding = FragmentContainerBinding.inflate(layoutInflater)
         return binding.root
@@ -41,7 +39,7 @@ class FragmentContainer: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        (activity as MainActivity).title = mPreferences.getString("APP_PREFERENCES_GROUP", resources.getString(R.string.app_name))
+        (activity as MainActivity).title = viewModel.getPreference(resources.getString(R.string.app_preferences_group), resources.getString(R.string.app_name))
     }
 
     private fun setupViewPager2() {

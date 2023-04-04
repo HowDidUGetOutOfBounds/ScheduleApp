@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".UI.SettingsFragment"
-    android:background="#0073FF">
+    android:background="@color/purple_700">
 
     <Spinner
         android:id="@+id/selectGroupSpinner"
@@ -16,9 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.15"
-        android:layout_margin="20dp"
-        android:textColor="@color/white"
-        android:textSize="20dp" />
+        android:layout_margin="20dp" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/enablePushesCheckBox"
@@ -33,17 +31,46 @@
         android:layout_margin="20dp"/>
 
     <TextView
-        android:id="@+id/textAboutPushesTextView"
+        android:id="@+id/enablePushesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="20dp"
-        android:text="Enable pushes"
+        android:text="Enable pushes?"
         app:layout_constraintBottom_toBottomOf="@id/enablePushesCheckBox"
         app:layout_constraintEnd_toStartOf="@id/enablePushesCheckBox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/enablePushesCheckBox"
         app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/staySignedInCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.35"
+        app:layout_constraintHorizontal_bias="1"
+        android:layout_margin="20dp"/>
+
+    <TextView
+        android:id="@+id/staySignedInTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:text="Stay signed in?"
+        app:layout_constraintBottom_toBottomOf="@id/staySignedInCheckBox"
+        app:layout_constraintEnd_toStartOf="@id/staySignedInCheckBox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/staySignedInCheckBox"
+        app:layout_constraintVertical_bias="0.35"
         app:layout_constraintHorizontal_bias="0"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
@@ -64,7 +91,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.35" />
+        app:layout_constraintVertical_bias="0.45" />
 
     <TextView
         android:id="@+id/contactUsTextView"
@@ -81,6 +108,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.43" />
+        app:layout_constraintVertical_bias="0.55" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
