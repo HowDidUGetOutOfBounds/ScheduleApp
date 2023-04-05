@@ -5,7 +5,10 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.scheduleapp.R
+import com.example.scheduleapp.data.Date
+import com.example.scheduleapp.data.Day
 import com.example.scheduleapp.data.GroupArray
+import com.example.scheduleapp.data.Schedule
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -14,6 +17,7 @@ import com.google.firebase.database.GenericTypeIndicator
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class OuterViewModel @Inject constructor(
@@ -41,7 +45,8 @@ class OuterViewModel @Inject constructor(
     fun UpdateGroups() {
         fDatabase.getReference("").get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                Log.d("TAG", "Successfully downloaded the data from the database.")
+                Log.d("TAG", "Successfully downloaded the data from the database:")
+                Log.d("TAG", task.result.value.toString())
 
                 try {
                     Log.d("TAG", Gson().fromJson(task.result.value.toString(), GroupArray::class.java).toString())

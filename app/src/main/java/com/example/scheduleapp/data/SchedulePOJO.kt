@@ -13,8 +13,14 @@ data class Group (
 )
 
 data class Day (
-    @SerializedName("date" ) var date : String?   = null,
+    @SerializedName("date" ) var date : Date?   = Date(),
     @SerializedName("dayschedule" ) var dayschedule : ArrayList<Schedule> = arrayListOf()
+)
+
+data class Date (
+    @SerializedName("year" ) var year : Int?   = null,
+    @SerializedName("month" ) var month : Int?   = null,
+    @SerializedName("day" ) var day : Int?   = null
 )
 
 data class Schedule (
