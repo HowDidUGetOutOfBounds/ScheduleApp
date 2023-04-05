@@ -44,6 +44,7 @@ class OuterViewModel @Inject constructor(
                 Log.d("TAG", "Successfully downloaded the data from the database.")
 
                 try {
+                    Log.d("TAG", Gson().fromJson(task.result.value.toString(), GroupArray::class.java).toString())
                     var groups = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).GroupList
                     APP_GROUP_LIST.clear()
                     groups.forEach { group ->
@@ -68,12 +69,12 @@ class OuterViewModel @Inject constructor(
         return APP_GROUP_LIST
     }
 
-    fun signUp(email: String, password: String): Task<AuthResult> {
-        return fAuth.createUserWithEmailAndPassword(email, password)
-    }
-
-    fun signIn(email: String, password: String): Task<AuthResult> {
-        return fAuth.signInWithEmailAndPassword(email, password)
+    fun signIn(email: String, password: String, newAccount: Boolean): Task<AuthResult> {
+        if (newAccount) {
+            return fAuth.createUserWithEmailAndPassword(email, password)
+        } else {
+            return fAuth.signInWithEmailAndPassword(email, password)
+        }
     }
 
     fun sendResetMessage(email: String): Task<Void> {

@@ -88,7 +88,7 @@ class LoginFragment : Fragment() {
     fun signIn() {
         binding.progressBar.visibility = View.VISIBLE
         binding.loginButton.isEnabled = false
-        viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString()).addOnCompleteListener{login->
+        viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString(), false).addOnCompleteListener{login->
             binding.progressBar.visibility = View.GONE
             setButtonVisibility()
 
