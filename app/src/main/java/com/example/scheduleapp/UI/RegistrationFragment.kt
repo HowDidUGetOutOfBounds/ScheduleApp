@@ -105,7 +105,7 @@ class RegistrationFragment : Fragment() {
             binding.progressBar.visibility = View.VISIBLE
             binding.registerButton.isEnabled = false
 
-            viewModel.signUp(binding.userEmail.text.toString(), binding.userPassword1.text.toString()).addOnCompleteListener{registration->
+            viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword1.text.toString(), true).addOnCompleteListener{registration->
                 binding.progressBar.visibility = View.GONE
                 setButtonVisibility()
 
