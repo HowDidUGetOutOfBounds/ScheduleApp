@@ -20,6 +20,6 @@ data class Day (
 data class Schedule (
     @SerializedName("pair"       ) var pair       : Int?    = null,
     @SerializedName("discipline" ) var discipline : String? = null,
-    @SerializedName("cabinet"    ) var cabinet    : Int?    = null,
+    @SerializedName("cabinet"    ) var cabinet    : String?    = null,
     @SerializedName("teacher"    ) var teacher    : String? = null
 )
