@@ -1,40 +1,31 @@
 package com.example.scheduleapp.UI
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
-import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.databinding.FragmentLoginBinding
+import com.example.scheduleapp.viewmodels.OuterViewModel
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.BuildConfig
-import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
-    lateinit var mAuth: FirebaseAuth
-    lateinit var mPreferences: SharedPreferences
+    private val viewModel: OuterViewModel by activityViewModels()
     private lateinit var binding: FragmentLoginBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mAuth = (activity as MainActivity).mAuth
-        mPreferences = (activity as MainActivity).mPreferences
-
         // Inflate the layout for this fragment
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
@@ -43,17 +34,15 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (mAuth.currentUser != null) {
-            if (mPreferences.getBoolean("APP_PREFERENCES_STAY", false)) {
-                view.findNavController()
-                    .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
-            }
+        if (!viewModel.checkIfUserIsNull()) {
+            view.findNavController()
+                .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
         }
 
-        binding.stayCheck.isChecked = mPreferences.getBoolean("APP_PREFERENCES_STAY", false)
+        binding.stayCheck.isChecked = viewModel.getPreference(resources.getString(R.string.app_preferences_stay), false)
         binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
-            mPreferences.edit()
-                .putBoolean("APP_PREFERENCES_STAY", isChecked)
+            viewModel.editPreferences()
+                .putBoolean(resources.getString(R.string.app_preferences_stay), isChecked)
                 .apply()
         }
 
@@ -70,22 +59,15 @@ class LoginFragment : Fragment() {
         binding.userPassword.addTextChangedListener(getBlankStringsChecker(binding.userPassword))
 
         binding.loginButton.setOnClickListener {
-            binding.progressBar.visibility = View.VISIBLE
-            binding.loginButton.isEnabled = false
-            mAuth.signInWithEmailAndPassword(binding.userEmail.text.toString(), binding.userPassword.text.toString()).addOnCompleteListener{login->
-                binding.progressBar.visibility = View.GONE
-                setButtonVisibility()
+            signIn()
+        }
+    }
 
-                if (login.isSuccessful()) {
-                    Toast.makeText(activity, "Logged in successfully", Toast.LENGTH_SHORT).show()
-                    Log.d("TAG", "Successful login")
-                    view.findNavController()
-                        .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
-                } else {
-                    Toast.makeText(activity, "Failed to log in: ${login.exception!!.message.toString()}", Toast.LENGTH_SHORT).show()
-                    Log.d("TAG", login.exception!!.message.toString())
-                }
-            }
+    fun setButtonVisibility() {
+        if (binding.progressBar.visibility == View.GONE) {
+            binding.loginButton.isEnabled =
+                !(binding.userEmail.text.toString().isBlank() || binding.userPassword.text.toString().isBlank())
+                        && binding.userPassword.text.toString().count() >= viewModel.getMinPasswordLength()
         }
     }
 
@@ -103,11 +85,22 @@ class LoginFragment : Fragment() {
         }
     }
 
-    fun setButtonVisibility() {
-        if (binding.progressBar.visibility == View.GONE) {
-            binding.loginButton.isEnabled =
-                !(binding.userEmail.text.toString().isBlank() || binding.userPassword.text.toString().isBlank())
-                        && binding.userPassword.text.toString().count() >= (activity as MainActivity).APP_MIN_PASSWORD_LENGTH
+    fun signIn() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.loginButton.isEnabled = false
+        viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString(), false).addOnCompleteListener{login->
+            binding.progressBar.visibility = View.GONE
+            setButtonVisibility()
+
+            if (login.isSuccessful()) {
+                Toast.makeText(activity, "Logged in successfully", Toast.LENGTH_SHORT).show()
+                Log.d("TAG", "Successful login")
+                requireView().findNavController()
+                    .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
+            } else {
+                Toast.makeText(activity, "Failed to log in: ${login.exception!!.message.toString()}", Toast.LENGTH_LONG).show()
+                Log.d("TAG", login.exception!!.message.toString())
+            }
         }
     }
 
