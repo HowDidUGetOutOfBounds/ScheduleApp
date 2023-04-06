@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.scheduleapp.data.Schedule
 import com.example.scheduleapp.data.ScheduleTest
 import com.example.scheduleapp.databinding.ItemScheduleBinding
 
@@ -17,11 +18,11 @@ class ScheduleRecyclerViewAdapter(
 
     class ItemViewHolder(private val binding: ItemScheduleBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun setSchedule(item: ScheduleTest) {
+        fun setSchedule(item: Schedule) {
             binding.apply {
                 pair.text = item.pair.toString()
                 discipline.text = item.discipline
-                cabinet.text = item.cabinet.toString()
+                cabinet.text = item.cabinet
                 teacher.text = item.teacher
             }
         }
@@ -41,13 +42,13 @@ class ScheduleRecyclerViewAdapter(
         return differ.currentList.size
     }
 
-    private val differCallback = object : DiffUtil.ItemCallback<ScheduleTest>() {
-        override fun areItemsTheSame(oldItem: ScheduleTest, newItem: ScheduleTest): Boolean {
+    private val differCallback = object : DiffUtil.ItemCallback<Schedule>() {
+        override fun areItemsTheSame(oldItem: Schedule, newItem: Schedule): Boolean {
             return oldItem.pair == newItem.pair
         }
 
         @SuppressLint("DiffUtilEquals")
-        override fun areContentsTheSame(oldItem: ScheduleTest, newItem: ScheduleTest): Boolean {
+        override fun areContentsTheSame(oldItem: Schedule, newItem: Schedule): Boolean {
             return oldItem == newItem
         }
     }

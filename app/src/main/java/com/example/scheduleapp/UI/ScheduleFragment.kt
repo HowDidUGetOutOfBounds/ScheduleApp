@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ScheduleFragment : Fragment() {
     private val scheduleRecyclerViewAdapter by lazy { ScheduleRecyclerViewAdapter() }
     private lateinit var binding: FragmentScheduleBinding
-    val viewModel: ScheduleFragmentViewModel by activityViewModels ()
+    val viewModel: ScheduleFragmentViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,18 +37,30 @@ class ScheduleFragment : Fragment() {
 
     override fun onViewCreated(itemView: View, savedInstanceState: Bundle?) {
         var groups: ArrayList<Day>
-        viewModel.getAll()
+        viewModel.getAll().addOnCompleteListener { task ->
+            viewModel.fillAll(task.result.value.toString())
 
-        scheduleRecyclerViewAdapter.differ.submitList(TestScheduleData().loadSchedule())
-        binding.apply {
-            schedulesRecyclerView.apply {
-                layoutManager=LinearLayoutManager(activity)
-                adapter=scheduleRecyclerViewAdapter
+            val group = viewModel.getGroup()
+
+//            scheduleRecyclerViewAdapter.differ.submitList(TestScheduleData().loadSchedule())
+
+            Log.d("TAG", "sch priner ${group?.schedule?.get(pos!!)?.dayschedule}")
+            Log.d("TAG", "current group $group")
+            scheduleRecyclerViewAdapter.differ.submitList(group?.schedule?.get(pos!!)?.dayschedule)
+            binding.apply {
+                schedulesRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(activity)
+                    adapter = scheduleRecyclerViewAdapter
+                }
             }
         }
     }
 
     companion object {
-        fun newInstance() = ScheduleFragment()
+        var pos: Int? = null
+        fun newInstance(position: Int): ScheduleFragment {
+            pos=position
+            return ScheduleFragment()
+        }
     }
 }
