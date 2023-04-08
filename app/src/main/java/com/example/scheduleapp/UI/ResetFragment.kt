@@ -12,13 +12,15 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.databinding.FragmentResetBinding
-import com.example.scheduleapp.viewmodels.OuterViewModel
+import com.example.scheduleapp.viewmodels.MainActivityViewModel
+
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ResetFragment : Fragment() {
-    private val viewModel: OuterViewModel by activityViewModels()
+    private val viewModel: MainActivityViewModel
+ by activityViewModels()
     private lateinit var binding: FragmentResetBinding
 
     override fun onCreateView(

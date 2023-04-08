@@ -15,13 +15,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
-import com.example.scheduleapp.viewmodels.OuterViewModel
+import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RegistrationFragment : Fragment() {
-    private val viewModel: OuterViewModel by activityViewModels()
+    private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentRegistrationBinding
 
     override fun onCreateView(

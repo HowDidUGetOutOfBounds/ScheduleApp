@@ -9,13 +9,14 @@ import androidx.fragment.app.activityViewModels
 import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.MainScreenAdapter
 import com.example.scheduleapp.databinding.FragmentContainerBinding
-import com.example.scheduleapp.viewmodels.OuterViewModel
+import com.example.scheduleapp.viewmodels.MainActivityViewModel
+
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FragmentContainer: Fragment() {
-    private val viewModel: OuterViewModel by activityViewModels()
+    private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var mainScreenAdapter: MainScreenAdapter
     private lateinit var binding: FragmentContainerBinding
 

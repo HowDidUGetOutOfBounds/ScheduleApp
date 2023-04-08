@@ -10,18 +10,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.databinding.ActivityMainBinding
-import com.example.scheduleapp.viewmodels.OuterViewModel
+import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val viewModel: OuterViewModel by viewModels()
+    private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        viewModel.editPreferences()
+            .putBoolean(resources.getString(R.string.app_preferences_stay), viewModel.getPreference(resources.getString(R.string.app_preferences_stay), true))
+            .putBoolean(resources.getString(R.string.app_preferences_pushes), viewModel.getPreference(resources.getString(R.string.app_preferences_pushes), true))
+            .apply()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

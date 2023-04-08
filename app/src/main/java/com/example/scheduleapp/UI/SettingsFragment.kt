@@ -11,12 +11,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.databinding.FragmentSettingsBinding
-import com.example.scheduleapp.viewmodels.OuterViewModel
+import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
-    private val viewModel: OuterViewModel by activityViewModels()
+    private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +76,6 @@ class SettingsFragment : Fragment() {
         viewModel.signOut()
         viewModel.editPreferences()
             .putBoolean(resources.getString(R.string.app_preferences_stay), false)
-            .putString(resources.getString(R.string.app_preferences_group), null)
             .apply()
         (activity as MainActivity).title = resources.getString(R.string.app_name)
 
