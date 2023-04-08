@@ -8,7 +8,6 @@ import com.example.scheduleapp.R
 import com.example.scheduleapp.data.Group
 import com.example.scheduleapp.data.GroupArray
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
@@ -16,9 +15,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ScheduleFragmentViewModel @Inject constructor(val mContext: Context) : ViewModel() {
+class ScheduleFragmentViewModel @Inject constructor(val mContext: Context, var mDatabase: FirebaseDatabase) : ViewModel() {
     private lateinit var APP_GROUP_ARRAY: ArrayList<Group>
-    private lateinit var mDatabase: FirebaseDatabase
     private lateinit var mPreferences: SharedPreferences
     init {
         InitializeParameters()
@@ -46,6 +44,6 @@ class ScheduleFragmentViewModel @Inject constructor(val mContext: Context) : Vie
                 return APP_GROUP_ARRAY[i]
             }
         }
-        return null
+        return Group()
     }
 }

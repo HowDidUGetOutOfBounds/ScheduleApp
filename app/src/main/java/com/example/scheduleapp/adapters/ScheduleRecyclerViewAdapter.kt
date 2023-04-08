@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scheduleapp.data.Schedule
-import com.example.scheduleapp.data.ScheduleTest
 import com.example.scheduleapp.databinding.ItemScheduleBinding
 
 

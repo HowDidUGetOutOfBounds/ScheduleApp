@@ -3,7 +3,6 @@ package com.example.scheduleapp.adapters
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.scheduleapp.UI.ScheduleFragment
-import com.example.scheduleapp.UI.SettingsFragment
 
 class MainScreenAdapter(fragment: Fragment):
     FragmentStateAdapter(fragment) {

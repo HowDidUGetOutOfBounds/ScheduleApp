@@ -9,16 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.scheduleapp.adapters.ScheduleRecyclerViewAdapter
-import com.example.scheduleapp.data.Day
-import com.example.scheduleapp.data.GroupArray
-import com.example.scheduleapp.data.TestScheduleData
 import com.example.scheduleapp.databinding.FragmentScheduleBinding
 import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
-class ScheduleFragment : Fragment() {
+class ScheduleFragment(val data: Int) : Fragment() {
     private val scheduleRecyclerViewAdapter by lazy { ScheduleRecyclerViewAdapter() }
     private lateinit var binding: FragmentScheduleBinding
     val viewModel: ScheduleFragmentViewModel by activityViewModels()
@@ -36,17 +33,28 @@ class ScheduleFragment : Fragment() {
     }
 
     override fun onViewCreated(itemView: View, savedInstanceState: Bundle?) {
-        var groups: ArrayList<Day>
+
+        val c = Calendar.getInstance()
+
+        val date = c.get(Calendar.DATE)
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+        Log.d("TAG", "Calendar $c")
+        Log.d("TAG", "date $date")
+        Log.d("TAG", "Year $year")
+        Log.d("TAG", "month $month")
+        Log.d("TAG", "day $day")
+
+
+
         viewModel.getAll().addOnCompleteListener { task ->
             viewModel.fillAll(task.result.value.toString())
-
             val group = viewModel.getGroup()
-
-//            scheduleRecyclerViewAdapter.differ.submitList(TestScheduleData().loadSchedule())
-
-            Log.d("TAG", "sch priner ${group?.schedule?.get(pos!!)?.dayschedule}")
+            Log.d("TAG", "sch priner ${group?.schedule?.get(data)?.dayschedule}")
             Log.d("TAG", "current group $group")
-            scheduleRecyclerViewAdapter.differ.submitList(group?.schedule?.get(pos!!)?.dayschedule)
+            scheduleRecyclerViewAdapter.differ.submitList(group?.schedule?.get(data)?.dayschedule)
             binding.apply {
                 schedulesRecyclerView.apply {
                     layoutManager = LinearLayoutManager(activity)
@@ -54,13 +62,13 @@ class ScheduleFragment : Fragment() {
                 }
             }
         }
+
+
     }
 
     companion object {
-        var pos: Int? = null
         fun newInstance(position: Int): ScheduleFragment {
-            pos=position
-            return ScheduleFragment()
+            return ScheduleFragment(position)
         }
     }
 }
