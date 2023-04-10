@@ -40,7 +40,7 @@ class FragmentContainer: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        (activity as MainActivity).title = viewModel.getPreference(resources.getString(R.string.app_preferences_group), resources.getString(R.string.app_name))
+        (activity as MainActivity).title = viewModel.getPreference(resources.getString(R.string.app_preferences_group)+"_"+viewModel.getCurrentUser()?.email.toString(), resources.getString(R.string.app_name))
     }
 
     private fun setupViewPager2() {

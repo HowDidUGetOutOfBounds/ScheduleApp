@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
-                if (viewModel.checkIfUserIsNull()) {
+                if (viewModel.getCurrentUser() == null) {
                     Toast.makeText(this, "You aren't signed in yet.", Toast.LENGTH_SHORT).show()
                     return false
                 } else if (supportFragmentManager.primaryNavigationFragment!!.childFragmentManager.fragments.last()::class.java == SettingsFragment::class.java) {
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         if (!viewModel.getPreference(resources.getString(R.string.app_preferences_stay), false)) {
-            if (!viewModel.checkIfUserIsNull()) {
+            if (viewModel.getCurrentUser() != null) {
                 viewModel.signOut()
             }
         }

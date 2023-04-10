@@ -52,7 +52,7 @@ class SettingsFragment : Fragment() {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
-            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(resources.getString(R.string.app_preferences_group), "")) {
+            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(getGroupPreferencesId(), "")) {
                 binding.selectGroupSpinner.setSelection(i)
                 break
             }
@@ -60,9 +60,9 @@ class SettingsFragment : Fragment() {
         binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 viewModel.editPreferences()
-                    .putString(resources.getString(R.string.app_preferences_group), parent?.getItemAtPosition(position).toString())
+                    .putString(getGroupPreferencesId(), parent?.getItemAtPosition(position).toString())
                     .apply()
-                (activity as MainActivity).title = viewModel.getPreference(resources.getString(R.string.app_preferences_group), resources.getString(R.string.app_name))
+                (activity as MainActivity).title = viewModel.getPreference(getGroupPreferencesId(), resources.getString(R.string.app_name))
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -81,6 +81,10 @@ class SettingsFragment : Fragment() {
 
         requireView().findNavController()
             .navigate(SettingsFragmentDirections.actionSettingsFragmentToLoginFragment())
+    }
+
+    fun getGroupPreferencesId(): String {
+        return resources.getString(R.string.app_preferences_group)+"_"+viewModel.getCurrentUser()!!.email.toString()
     }
 
     companion object {

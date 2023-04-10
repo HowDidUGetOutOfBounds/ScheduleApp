@@ -34,7 +34,7 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (!viewModel.checkIfUserIsNull()) {
+        if (viewModel.getCurrentUser() != null) {
             view.findNavController()
                 .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
         }

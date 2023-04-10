@@ -98,7 +98,7 @@ class RegistrationFragment : Fragment() {
 
     fun signUp() {
         if (binding.userPassword1.text.toString().count() < viewModel.getMinPasswordLength()) {
-            Toast.makeText(activity, "Your password should be at least 8 characters long", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, "Your password should be at least ${viewModel.getMinPasswordLength()} characters long", Toast.LENGTH_SHORT).show()
         } else if (!binding.userPassword1.text.toString().equals(binding.userPassword2.text.toString())) {
             Toast.makeText(activity, "Your passwords don't match. Please confirm your password.", Toast.LENGTH_SHORT).show()
         } else {
@@ -114,7 +114,7 @@ class RegistrationFragment : Fragment() {
                     Log.d("TAG", "Successful registration")
 
                     viewModel.editPreferences()
-                        .putString(resources.getString(R.string.app_preferences_group), viewModel.getPreference(resources.getString(R.string.app_preferences_group_register), ""))
+                        .putString(resources.getString(R.string.app_preferences_group) + "_" + binding.userEmail.text.toString(), viewModel.getPreference(resources.getString(R.string.app_preferences_group_register), ""))
                         .putString(resources.getString(R.string.app_preferences_group_register), null)
                         .apply()
                     requireView().findNavController()

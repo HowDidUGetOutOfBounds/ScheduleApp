@@ -6,9 +6,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.scheduleapp.R
 import com.example.scheduleapp.data.GroupArray
+import com.example.scheduleapp.models.FirebaseImplementation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,35 +18,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val mContext: Context
+    private val rImplementation: FirebaseImplementation,
+    private val sPreferences: SharedPreferences
 ) : ViewModel() {
-    private lateinit var fAuth: FirebaseAuth
-    private lateinit var fDatabase: FirebaseDatabase
-    private lateinit var sPreferences: SharedPreferences
-
     private val APP_GROUP_LIST = ArrayList<String>()
     private val APP_MIN_PASSWORD_LENGTH = 8
 
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
-        InitializeParameters()
         UpdateGroups()
     }
 
-    fun InitializeParameters() {
-        fAuth = FirebaseAuth.getInstance()
-        fDatabase = FirebaseDatabase.getInstance()
-        sPreferences = mContext.getSharedPreferences(mContext.resources.getString(R.string.app_name), Context.MODE_PRIVATE)
+    fun getMinPasswordLength(): Int {
+        return APP_MIN_PASSWORD_LENGTH
     }
 
     fun UpdateGroups() {
-        fDatabase.getReference("").get().addOnCompleteListener { task ->
+        rImplementation.downloadDB().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Log.d("TAG", "Successfully downloaded the data from the database:")
                 Log.d("TAG", task.result.value.toString())
 
                 try {
-                    Log.d("TAG", Gson().fromJson(task.result.value.toString(), GroupArray::class.java).toString())
                     var groups = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).GroupList
                     APP_GROUP_LIST.clear()
                     groups.forEach { group ->
@@ -61,32 +56,24 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun getMinPasswordLength(): Int {
-        return APP_MIN_PASSWORD_LENGTH
-    }
-
     fun getGroupList(): ArrayList<String> {
         return APP_GROUP_LIST
     }
 
-    fun signIn(email: String, password: String, newAccount: Boolean): Task<AuthResult> {
-        if (newAccount) {
-            return fAuth.createUserWithEmailAndPassword(email, password)
-        } else {
-            return fAuth.signInWithEmailAndPassword(email, password)
-        }
+    fun getCurrentUser(): FirebaseUser? {
+        return rImplementation.getCurrentUser()
     }
 
-    fun sendResetMessage(email: String): Task<Void> {
-        return fAuth.sendPasswordResetEmail(email)
+    fun signIn(email: String, password: String, newAccount: Boolean): Task<AuthResult> {
+        return rImplementation.signIn(email, password, newAccount)
     }
 
     fun signOut() {
-        fAuth.signOut()
+        rImplementation.signOut()
     }
 
-    fun checkIfUserIsNull(): Boolean {
-        return (fAuth.currentUser == null)
+    fun sendResetMessage(email: String): Task<Void> {
+        return rImplementation.sendResetMessage(email)
     }
 
     fun editPreferences(): SharedPreferences.Editor {
