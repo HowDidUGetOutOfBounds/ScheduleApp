@@ -11,8 +11,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import com.example.scheduleapp.R
+import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentLoginBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -40,10 +41,10 @@ class LoginFragment : Fragment() {
                 .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
         }
 
-        binding.stayCheck.isChecked = viewModel.getPreference(Constants.app_preferences_stay, false)
+        binding.stayCheck.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
         binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.editPreferences()
-                .putBoolean(Constants.app_preferences_stay, isChecked)
+                .putBoolean(Constants.APP_PREFERENCES_STAY, isChecked)
                 .apply()
         }
 
@@ -60,15 +61,17 @@ class LoginFragment : Fragment() {
         binding.userPassword.addTextChangedListener(getBlankStringsChecker(binding.userPassword))
 
         binding.loginButton.setOnClickListener {
-            signIn()
+            viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString(), false)
         }
+
+        initObservers()
     }
 
     fun setButtonVisibility() {
         if (binding.progressBar.visibility == View.GONE) {
             binding.loginButton.isEnabled =
                 !(binding.userEmail.text.toString().isBlank() || binding.userPassword.text.toString().isBlank())
-                        && binding.userPassword.text.toString().count() >= Constants.app_min_password_length
+                        && binding.userPassword.text.toString().count() >= Constants.APP_MIN_PASSWORD_LENGTH
         }
     }
 
@@ -86,21 +89,27 @@ class LoginFragment : Fragment() {
         }
     }
 
-    fun signIn() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.loginButton.isEnabled = false
-        viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString(), false).addOnCompleteListener{login->
-            binding.progressBar.visibility = View.GONE
-            setButtonVisibility()
-
-            if (login.isSuccessful()) {
-                Toast.makeText(activity, "Logged in successfully", Toast.LENGTH_SHORT).show()
-                Log.d("TAG", "Successful login")
-                requireView().findNavController()
-                    .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
-            } else {
-                Toast.makeText(activity, "Failed to log in: ${login.exception!!.message.toString()}", Toast.LENGTH_LONG).show()
-                Log.d("TAG", login.exception!!.message.toString())
+    fun initObservers() {
+        viewModel.authState.observe(viewLifecycleOwner) {authStatus->
+            when (authStatus) {
+                is AuthenticationStatus.Success -> {
+                    setButtonVisibility()
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(activity, "Logged in successfully", Toast.LENGTH_SHORT).show()
+                    Log.d("TAG", "Successful login")
+                    requireView().findNavController()
+                        .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
+                }
+                is AuthenticationStatus.Error -> {
+                    setButtonVisibility()
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(activity, "Failed to log in: ${authStatus.message}", Toast.LENGTH_LONG).show()
+                    Log.d("TAG", authStatus.message)
+                }
+                is AuthenticationStatus.Progress -> {
+                    binding.loginButton.isEnabled = false
+                    binding.progressBar.visibility = View.VISIBLE
+                }
             }
         }
     }

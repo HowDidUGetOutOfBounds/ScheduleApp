@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import com.example.scheduleapp.R
+import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
@@ -37,10 +37,10 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.stayCheck.isChecked = viewModel.getPreference(Constants.app_preferences_stay, false)
+        binding.stayCheck.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
         binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.editPreferences()
-                .putBoolean(Constants.app_preferences_stay, isChecked)
+                .putBoolean(Constants.APP_PREFERENCES_STAY, isChecked)
                 .apply()
         }
 
@@ -48,7 +48,7 @@ class RegistrationFragment : Fragment() {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
-            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(Constants.app_preferences_group_register, "")) {
+            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(Constants.APP_PREFERENCES_GROUP_REGISTER, "")) {
                 binding.selectGroupSpinner.setSelection(i)
                 break
             }
@@ -56,7 +56,7 @@ class RegistrationFragment : Fragment() {
         binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 viewModel.editPreferences()
-                    .putString(Constants.app_preferences_group_register, parent?.getItemAtPosition(position).toString())
+                    .putString(Constants.APP_PREFERENCES_GROUP_REGISTER, parent?.getItemAtPosition(position).toString())
                     .apply()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -74,6 +74,8 @@ class RegistrationFragment : Fragment() {
         binding.registerButton.setOnClickListener {
             signUp()
         }
+
+        initObservers()
     }
 
     fun setButtonVisibility() {
@@ -98,31 +100,40 @@ class RegistrationFragment : Fragment() {
     }
 
     fun signUp() {
-        if (binding.userPassword1.text.toString().count() < Constants.app_min_password_length) {
-            Toast.makeText(activity, "Your password should be at least ${Constants.app_min_password_length} characters long", Toast.LENGTH_SHORT).show()
+        if (binding.userPassword1.text.toString().count() < Constants.APP_MIN_PASSWORD_LENGTH) {
+            Toast.makeText(activity, "Your password should be at least ${Constants.APP_MIN_PASSWORD_LENGTH} characters long", Toast.LENGTH_SHORT).show()
         } else if (!binding.userPassword1.text.toString().equals(binding.userPassword2.text.toString())) {
             Toast.makeText(activity, "Your passwords don't match. Please confirm your password.", Toast.LENGTH_SHORT).show()
         } else {
-            binding.progressBar.visibility = View.VISIBLE
-            binding.registerButton.isEnabled = false
+            viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword1.text.toString(), true)
+        }
+    }
 
-            viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword1.text.toString(), true).addOnCompleteListener{registration->
-                binding.progressBar.visibility = View.GONE
-                setButtonVisibility()
-
-                if (registration.isSuccessful()) {
+    fun initObservers() {
+        viewModel.authState.observe(viewLifecycleOwner) {authStatus->
+            when (authStatus) {
+                is AuthenticationStatus.Success -> {
+                    setButtonVisibility()
+                    binding.progressBar.visibility = View.GONE
                     Toast.makeText(activity, "Registered successfully.", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", "Successful registration")
 
                     viewModel.editPreferences()
-                        .putString(Constants.app_preferences_group + "_" + binding.userEmail.text.toString(), viewModel.getPreference(Constants.app_preferences_group_register, ""))
-                        .putString(Constants.app_preferences_group_register, null)
+                        .putString(Constants.APP_PREFERENCES_GROUP + "_" + binding.userEmail.text.toString(), viewModel.getPreference(Constants.APP_PREFERENCES_GROUP_REGISTER, ""))
+                        .putString(Constants.APP_PREFERENCES_GROUP_REGISTER, null)
                         .apply()
                     requireView().findNavController()
                         .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
-                } else {
-                    Toast.makeText(activity, "Registration failure: ${registration.exception!!.message.toString()}", Toast.LENGTH_LONG).show()
-                    Log.d("TAG", registration.exception!!.message.toString())
+                }
+                is AuthenticationStatus.Error -> {
+                    setButtonVisibility()
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(activity, "Failed to sign up: ${authStatus.message}", Toast.LENGTH_LONG).show()
+                    Log.d("TAG", authStatus.message)
+                }
+                is AuthenticationStatus.Progress -> {
+                    binding.loginButton.isEnabled = false
+                    binding.progressBar.visibility = View.VISIBLE
                 }
             }
         }

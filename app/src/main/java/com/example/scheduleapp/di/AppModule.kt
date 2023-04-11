@@ -2,8 +2,6 @@ package com.example.scheduleapp.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.res.Resources
-import com.example.scheduleapp.R
 import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.models.FirebaseImplementation
 import com.example.scheduleapp.models.FirebaseRepository
@@ -35,7 +33,7 @@ object AppModule {
     @Provides
     @Singleton
     fun providePreferences(@ApplicationContext context: Context): SharedPreferences {
-        return context.getSharedPreferences(Constants.app_preferences, Context.MODE_PRIVATE)
+        return context.getSharedPreferences(Constants.APP_PREFERENCES, Context.MODE_PRIVATE)
     }
 
     @Provides

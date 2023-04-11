@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.databinding.FragmentResetBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 
@@ -19,8 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ResetFragment : Fragment() {
-    private val viewModel: MainActivityViewModel
- by activityViewModels()
+    private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentResetBinding
 
     override fun onCreateView(
@@ -43,8 +43,10 @@ class ResetFragment : Fragment() {
         binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
 
         binding.resetButton.setOnClickListener {
-            sendResetMessage()
+            viewModel.sendResetMessage(binding.userEmail.text.toString())
         }
+
+        initObservers()
     }
 
     fun setButtonVisibility() {
@@ -67,20 +69,25 @@ class ResetFragment : Fragment() {
         }
     }
 
-    fun sendResetMessage() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.resetButton.isEnabled = false
-
-        viewModel.sendResetMessage(binding.userEmail.text.toString()).addOnCompleteListener{reset->
-            binding.progressBar.visibility = View.GONE
-            setButtonVisibility()
-
-            if (reset.isSuccessful()) {
-                Toast.makeText(activity, "Reset message sent successfully.", Toast.LENGTH_SHORT).show()
-                Log.d("TAG", "Successful send")
-            } else {
-                Toast.makeText(activity, "Failed to send the reset message: ${reset.exception!!.message.toString()}", Toast.LENGTH_LONG).show()
-                Log.d("TAG", reset.exception!!.message.toString())
+    fun initObservers() {
+        viewModel.authState.observe(viewLifecycleOwner) {authStatus->
+            when (authStatus) {
+                is AuthenticationStatus.Success -> {
+                    setButtonVisibility()
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(activity, "Reset message sent successfully.", Toast.LENGTH_SHORT).show()
+                    Log.d("TAG", "Successful send")
+                }
+                is AuthenticationStatus.Error -> {
+                    setButtonVisibility()
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(activity, "Failed to send the reset message: ${authStatus.message}", Toast.LENGTH_LONG).show()
+                    Log.d("TAG", authStatus.message)
+                }
+                is AuthenticationStatus.Progress -> {
+                    binding.loginButton.isEnabled = false
+                    binding.progressBar.visibility = View.VISIBLE
+                }
             }
         }
     }

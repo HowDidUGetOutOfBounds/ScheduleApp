@@ -36,16 +36,16 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.enablePushesCheckBox.isChecked = viewModel.getPreference(Constants.app_preferences_pushes, false)
-        binding.staySignedInCheckBox.isChecked = viewModel.getPreference(Constants.app_preferences_stay, false)
+        binding.enablePushesCheckBox.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_PUSHES, false)
+        binding.staySignedInCheckBox.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
         binding.enablePushesCheckBox.setOnCheckedChangeListener(){v, checked ->
             viewModel.editPreferences()
-                .putBoolean(Constants.app_preferences_pushes, checked)
+                .putBoolean(Constants.APP_PREFERENCES_PUSHES, checked)
                 .apply()
         }
         binding.staySignedInCheckBox.setOnCheckedChangeListener(){v, checked ->
             viewModel.editPreferences()
-                .putBoolean(Constants.app_preferences_stay, checked)
+                .putBoolean(Constants.APP_PREFERENCES_STAY, checked)
                 .apply()
         }
 
@@ -76,7 +76,7 @@ class SettingsFragment : Fragment() {
     fun logOut() {
         viewModel.signOut()
         viewModel.editPreferences()
-            .putBoolean(Constants.app_preferences_stay, false)
+            .putBoolean(Constants.APP_PREFERENCES_STAY, false)
             .apply()
         (activity as MainActivity).title = resources.getString(R.string.app_name)
 
@@ -85,7 +85,7 @@ class SettingsFragment : Fragment() {
     }
 
     fun getGroupPreferencesId(): String {
-        return Constants.app_preferences_group+"_"+viewModel.getCurrentUser()!!.email.toString()
+        return Constants.APP_PREFERENCES_GROUP+"_"+viewModel.getCurrentUser()!!.email.toString()
     }
 
     companion object {

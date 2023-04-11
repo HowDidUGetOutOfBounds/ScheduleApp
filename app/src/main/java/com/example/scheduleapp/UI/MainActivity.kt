@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.data.Constants
-import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.ActivityMainBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,11 +25,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel.editPreferences()
-            .putBoolean(Constants.app_preferences_stay, viewModel.getPreference(Constants.app_preferences_stay, true))
-            .putBoolean(Constants.app_preferences_pushes, viewModel.getPreference(Constants.app_preferences_pushes, true))
+            .putBoolean(Constants.APP_PREFERENCES_STAY, viewModel.getPreference(Constants.APP_PREFERENCES_STAY, true))
+            .putBoolean(Constants.APP_PREFERENCES_PUSHES, viewModel.getPreference(Constants.APP_PREFERENCES_PUSHES, true))
             .apply()
-
-        initObservers()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -58,26 +55,11 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onDestroy() {
-        if (!viewModel.getPreference(Constants.app_preferences_stay, false)) {
+        if (!viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)) {
             if (viewModel.getCurrentUser() != null) {
                 viewModel.signOut()
             }
         }
         super.onDestroy()
-    }
-
-    fun initObservers() {
-        viewModel.downloadState.observe(this) {downloadStatus->
-            when (downloadStatus) {
-                is DownloadStatus.Success -> {
-                    downloadStatus.result
-                }
-                is DownloadStatus.Error -> {
-                }
-                is DownloadStatus.Progress -> {
-
-                }
-            }
-        }
     }
 }
