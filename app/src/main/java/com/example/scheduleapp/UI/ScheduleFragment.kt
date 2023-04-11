@@ -1,7 +1,6 @@
 package com.example.scheduleapp.UI
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class ScheduleFragment(val data: Int) : Fragment() {
+class ScheduleFragment() : Fragment() {
+    var index: Int? = null
     private val scheduleRecyclerViewAdapter by lazy { ScheduleRecyclerViewAdapter() }
     private lateinit var binding: FragmentScheduleBinding
     val viewModel: ScheduleFragmentViewModel by activityViewModels()
@@ -34,41 +34,42 @@ class ScheduleFragment(val data: Int) : Fragment() {
 
     override fun onViewCreated(itemView: View, savedInstanceState: Bundle?) {
 
-        val c = Calendar.getInstance()
 
-        val date = c.get(Calendar.DATE)
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
-
-        Log.d("TAG", "Calendar $c")
-        Log.d("TAG", "date $date")
-        Log.d("TAG", "Year $year")
-        Log.d("TAG", "month $month")
-        Log.d("TAG", "day $day")
+        viewModel.getAll()
+        initObservers()
 
 
+        val args = arguments
+        index = args?.let { it.getInt("index", 0) }
+        index?.let { viewModel.getDayWithOffset(it) }
+    }
 
-        viewModel.getAll().addOnCompleteListener { task ->
-            viewModel.fillAll(task.result.value.toString())
-            val group = viewModel.getGroup()
-            Log.d("TAG", "sch priner ${group?.schedule?.get(data)?.dayschedule}")
-            Log.d("TAG", "current group $group")
-            scheduleRecyclerViewAdapter.differ.submitList(group?.schedule?.get(data)?.dayschedule)
-            binding.apply {
-                schedulesRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(activity)
-                    adapter = scheduleRecyclerViewAdapter
+    private fun initObservers() {
+        viewModel.appGroupArray.observe(viewLifecycleOwner) { groupList ->
+            //create progress bar
+            if (groupList.size > 0) {
+                if (index != null) {
+                    val group = groupList[0]
+                    scheduleRecyclerViewAdapter.differ.submitList(group.schedule?.get(index!!)?.dayschedule)
+                    binding.apply {
+                        schedulesRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(activity)
+                            adapter = scheduleRecyclerViewAdapter
+                        }
+                    }
                 }
             }
+            //create progress bar
         }
-
-
     }
 
     companion object {
         fun newInstance(position: Int): ScheduleFragment {
-            return ScheduleFragment(position)
+            val fragment = ScheduleFragment()
+            val args = Bundle()
+            args.putInt("index", position)
+            fragment.arguments = args
+            return fragment
         }
     }
 }
