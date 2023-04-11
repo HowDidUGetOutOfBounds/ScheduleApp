@@ -3,10 +3,14 @@ package com.example.scheduleapp.viewmodels
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.scheduleapp.R
+import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.data.GroupArray
 import com.example.scheduleapp.models.FirebaseImplementation
+import com.example.scheduleapp.models.FirebaseRepository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -18,22 +22,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val rImplementation: FirebaseImplementation,
+    private val rImplementation: FirebaseRepository,
     private val sPreferences: SharedPreferences
 ) : ViewModel() {
+    val downloadState: MutableLiveData<DownloadStatus> = MutableLiveData()
     private val APP_GROUP_LIST = ArrayList<String>()
-    private val APP_MIN_PASSWORD_LENGTH = 8
 
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
         UpdateGroups()
     }
 
-    fun getMinPasswordLength(): Int {
-        return APP_MIN_PASSWORD_LENGTH
-    }
-
     fun UpdateGroups() {
+        downloadState.value = DownloadStatus.Progress
         rImplementation.downloadDB().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Log.d("TAG", "Successfully downloaded the data from the database:")
@@ -41,6 +42,9 @@ class MainActivityViewModel @Inject constructor(
 
                 try {
                     var groups = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).GroupList
+                    downloadState.value = DownloadStatus.Success(groups)
+
+                    Log.d("TAG", "Successfully downloaded the data from the database:")
                     APP_GROUP_LIST.clear()
                     groups.forEach { group ->
                         APP_GROUP_LIST.add(group.groupname!!)
@@ -48,9 +52,11 @@ class MainActivityViewModel @Inject constructor(
                     Log.d("TAG", "Successfully read and converted the data:")
                     Log.d("TAG", groups.toString())
                 } catch (e: Exception) {
+                    downloadState.value = DownloadStatus.Error(e.message.toString())
                     Log.d("TAG", "Failed to convert the data: ${e.message}")
                 }
             } else {
+                downloadState.value = DownloadStatus.Error("Wasn't able to download info from DB.")
                 Log.d("TAG", "Failed to download the data from the database.")
             }
         }

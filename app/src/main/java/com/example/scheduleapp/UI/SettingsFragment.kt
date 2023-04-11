@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
+import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.databinding.FragmentSettingsBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,16 +36,16 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.enablePushesCheckBox.isChecked = viewModel.getPreference(resources.getString(R.string.app_preferences_pushes), false)
-        binding.staySignedInCheckBox.isChecked = viewModel.getPreference(resources.getString(R.string.app_preferences_stay), false)
+        binding.enablePushesCheckBox.isChecked = viewModel.getPreference(Constants.app_preferences_pushes, false)
+        binding.staySignedInCheckBox.isChecked = viewModel.getPreference(Constants.app_preferences_stay, false)
         binding.enablePushesCheckBox.setOnCheckedChangeListener(){v, checked ->
             viewModel.editPreferences()
-                .putBoolean(resources.getString(R.string.app_preferences_pushes), checked)
+                .putBoolean(Constants.app_preferences_pushes, checked)
                 .apply()
         }
         binding.staySignedInCheckBox.setOnCheckedChangeListener(){v, checked ->
             viewModel.editPreferences()
-                .putBoolean(resources.getString(R.string.app_preferences_stay), checked)
+                .putBoolean(Constants.app_preferences_stay, checked)
                 .apply()
         }
 
@@ -75,7 +76,7 @@ class SettingsFragment : Fragment() {
     fun logOut() {
         viewModel.signOut()
         viewModel.editPreferences()
-            .putBoolean(resources.getString(R.string.app_preferences_stay), false)
+            .putBoolean(Constants.app_preferences_stay, false)
             .apply()
         (activity as MainActivity).title = resources.getString(R.string.app_name)
 
@@ -84,7 +85,7 @@ class SettingsFragment : Fragment() {
     }
 
     fun getGroupPreferencesId(): String {
-        return resources.getString(R.string.app_preferences_group)+"_"+viewModel.getCurrentUser()!!.email.toString()
+        return Constants.app_preferences_group+"_"+viewModel.getCurrentUser()!!.email.toString()
     }
 
     companion object {

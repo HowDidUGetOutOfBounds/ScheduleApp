@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
+import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.databinding.FragmentLoginBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -39,10 +40,10 @@ class LoginFragment : Fragment() {
                 .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
         }
 
-        binding.stayCheck.isChecked = viewModel.getPreference(resources.getString(R.string.app_preferences_stay), false)
+        binding.stayCheck.isChecked = viewModel.getPreference(Constants.app_preferences_stay, false)
         binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.editPreferences()
-                .putBoolean(resources.getString(R.string.app_preferences_stay), isChecked)
+                .putBoolean(Constants.app_preferences_stay, isChecked)
                 .apply()
         }
 
@@ -67,7 +68,7 @@ class LoginFragment : Fragment() {
         if (binding.progressBar.visibility == View.GONE) {
             binding.loginButton.isEnabled =
                 !(binding.userEmail.text.toString().isBlank() || binding.userPassword.text.toString().isBlank())
-                        && binding.userPassword.text.toString().count() >= viewModel.getMinPasswordLength()
+                        && binding.userPassword.text.toString().count() >= Constants.app_min_password_length
         }
     }
 

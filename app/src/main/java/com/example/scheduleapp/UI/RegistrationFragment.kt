@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
+import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -36,10 +37,10 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.stayCheck.isChecked = viewModel.getPreference(resources.getString(R.string.app_preferences_stay), false)
+        binding.stayCheck.isChecked = viewModel.getPreference(Constants.app_preferences_stay, false)
         binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.editPreferences()
-                .putBoolean(resources.getString(R.string.app_preferences_stay), isChecked)
+                .putBoolean(Constants.app_preferences_stay, isChecked)
                 .apply()
         }
 
@@ -47,7 +48,7 @@ class RegistrationFragment : Fragment() {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
-            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(resources.getString(R.string.app_preferences_group_register), "")) {
+            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(Constants.app_preferences_group_register, "")) {
                 binding.selectGroupSpinner.setSelection(i)
                 break
             }
@@ -55,7 +56,7 @@ class RegistrationFragment : Fragment() {
         binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 viewModel.editPreferences()
-                    .putString(resources.getString(R.string.app_preferences_group_register), parent?.getItemAtPosition(position).toString())
+                    .putString(Constants.app_preferences_group_register, parent?.getItemAtPosition(position).toString())
                     .apply()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -97,8 +98,8 @@ class RegistrationFragment : Fragment() {
     }
 
     fun signUp() {
-        if (binding.userPassword1.text.toString().count() < viewModel.getMinPasswordLength()) {
-            Toast.makeText(activity, "Your password should be at least ${viewModel.getMinPasswordLength()} characters long", Toast.LENGTH_SHORT).show()
+        if (binding.userPassword1.text.toString().count() < Constants.app_min_password_length) {
+            Toast.makeText(activity, "Your password should be at least ${Constants.app_min_password_length} characters long", Toast.LENGTH_SHORT).show()
         } else if (!binding.userPassword1.text.toString().equals(binding.userPassword2.text.toString())) {
             Toast.makeText(activity, "Your passwords don't match. Please confirm your password.", Toast.LENGTH_SHORT).show()
         } else {
@@ -114,8 +115,8 @@ class RegistrationFragment : Fragment() {
                     Log.d("TAG", "Successful registration")
 
                     viewModel.editPreferences()
-                        .putString(resources.getString(R.string.app_preferences_group) + "_" + binding.userEmail.text.toString(), viewModel.getPreference(resources.getString(R.string.app_preferences_group_register), ""))
-                        .putString(resources.getString(R.string.app_preferences_group_register), null)
+                        .putString(Constants.app_preferences_group + "_" + binding.userEmail.text.toString(), viewModel.getPreference(Constants.app_preferences_group_register, ""))
+                        .putString(Constants.app_preferences_group_register, null)
                         .apply()
                     requireView().findNavController()
                         .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())

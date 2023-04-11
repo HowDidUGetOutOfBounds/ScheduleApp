@@ -9,6 +9,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
+import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.ActivityMainBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,9 +26,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel.editPreferences()
-            .putBoolean(resources.getString(R.string.app_preferences_stay), viewModel.getPreference(resources.getString(R.string.app_preferences_stay), true))
-            .putBoolean(resources.getString(R.string.app_preferences_pushes), viewModel.getPreference(resources.getString(R.string.app_preferences_pushes), true))
+            .putBoolean(Constants.app_preferences_stay, viewModel.getPreference(Constants.app_preferences_stay, true))
+            .putBoolean(Constants.app_preferences_pushes, viewModel.getPreference(Constants.app_preferences_pushes, true))
             .apply()
+
+        initObservers()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -54,11 +58,26 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onDestroy() {
-        if (!viewModel.getPreference(resources.getString(R.string.app_preferences_stay), false)) {
+        if (!viewModel.getPreference(Constants.app_preferences_stay, false)) {
             if (viewModel.getCurrentUser() != null) {
                 viewModel.signOut()
             }
         }
         super.onDestroy()
+    }
+
+    fun initObservers() {
+        viewModel.downloadState.observe(this) {downloadStatus->
+            when (downloadStatus) {
+                is DownloadStatus.Success -> {
+                    downloadStatus.result
+                }
+                is DownloadStatus.Error -> {
+                }
+                is DownloadStatus.Progress -> {
+
+                }
+            }
+        }
     }
 }
