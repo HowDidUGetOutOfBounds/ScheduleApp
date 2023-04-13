@@ -47,6 +47,7 @@ class FragmentContainer: Fragment() {
     private fun setupViewPager2() {
         mainScreenAdapter = MainScreenAdapter(this)
         binding.fragmentViewPager2.adapter = mainScreenAdapter
+        binding.fragmentViewPager2.currentItem = 2
 
         TabLayoutMediator(binding.tabLayout, binding.fragmentViewPager2){ tab, position ->
             tab.text = position.toString()
