@@ -7,15 +7,16 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scheduleapp.data.Schedule
+import com.example.scheduleapp.databinding.FigmaFileBinding
 import com.example.scheduleapp.databinding.ItemScheduleBinding
 
 
 class ScheduleRecyclerViewAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private lateinit var binding: ItemScheduleBinding
+    private lateinit var binding: FigmaFileBinding
 
-    class ItemViewHolder(private val binding: ItemScheduleBinding) :
+    class ItemViewHolder(private val binding: FigmaFileBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun setSchedule(item: Schedule) {
             binding.apply {
@@ -28,7 +29,7 @@ class ScheduleRecyclerViewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        binding = ItemScheduleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        binding = FigmaFileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ItemViewHolder(binding)
     }
 

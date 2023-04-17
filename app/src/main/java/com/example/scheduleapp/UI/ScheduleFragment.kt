@@ -1,7 +1,6 @@
 package com.example.scheduleapp.UI
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.scheduleapp.adapters.ScheduleRecyclerViewAdapter
-import com.example.scheduleapp.data.Day
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentScheduleBinding
 import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
@@ -60,9 +58,9 @@ class ScheduleFragment() : Fragment() {
                     binding.progressBar.visibility = View.GONE
                     if (groupList.size > 0) {
                         if (index != null) {
-                            var currentGroup = viewModel.getGroup(groupList)
+                            val currentGroup = viewModel.getGroup(groupList)
                             if (currentGroup != null) {
-                                var currentSchedule = viewModel.checkDate(index!!, currentGroup)
+                                val currentSchedule = viewModel.checkDate(index!!, currentGroup)
                                 if (currentSchedule != null) {
                                     scheduleRecyclerViewAdapter.differ.submitList(currentSchedule.dayschedule)
                                     binding.apply {

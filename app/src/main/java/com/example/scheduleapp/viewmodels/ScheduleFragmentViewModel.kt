@@ -5,11 +5,9 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.scheduleapp.data.*
-import com.example.scheduleapp.models.FirebaseImplementation
 import com.example.scheduleapp.models.FirebaseRepository
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.text.FieldPosition
 import java.util.Calendar
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -25,8 +23,8 @@ class ScheduleFragmentViewModel @Inject constructor(
         getAll()
     }
 
-    fun getDayWithOffset(index: Int): Date? {
-        var position = index - 2
+    private fun getDayWithOffset(index: Int): Date{
+        val position = index - 2
         val c = Calendar.getInstance()
 
         if (position != 0) {
@@ -69,7 +67,7 @@ class ScheduleFragmentViewModel @Inject constructor(
         downloadStatus.value = DownloadStatus.Progress
         try {
             rImplementation.downloadDB().addOnCompleteListener { text ->
-                var appGroupArray = Gson().fromJson(
+                val appGroupArray = Gson().fromJson(
                     text.result.value.toString(), GroupArray::class.java
                 ).GroupList
                 downloadStatus.value = DownloadStatus.Success(appGroupArray)
