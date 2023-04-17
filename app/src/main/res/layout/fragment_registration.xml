@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UI.RegistrationFragment"
-    android:background="@color/purple_700">
+    android:background="@color/background_color_default">
 
     <CheckBox
         android:id="@+id/stayCheck"

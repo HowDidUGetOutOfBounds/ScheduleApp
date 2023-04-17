@@ -6,10 +6,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.scheduleapp.R
-import com.example.scheduleapp.data.AuthenticationStatus
-import com.example.scheduleapp.data.Constants
-import com.example.scheduleapp.data.DownloadStatus
-import com.example.scheduleapp.data.GroupArray
+import com.example.scheduleapp.data.*
 import com.example.scheduleapp.models.FirebaseImplementation
 import com.example.scheduleapp.models.FirebaseRepository
 import com.google.android.gms.tasks.Task
@@ -28,7 +25,7 @@ class MainActivityViewModel @Inject constructor(
 ) : ViewModel() {
     val downloadState: MutableLiveData<DownloadStatus> = MutableLiveData()
     val authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
-    private val appGroupList = ArrayList<String>()
+    private var appGroupList = ArrayList<Group>()
 
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
@@ -43,15 +40,12 @@ class MainActivityViewModel @Inject constructor(
                 Log.d("TAG", task.result.value.toString())
 
                 try {
-                    var groups = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).GroupList
-                    downloadState.value = DownloadStatus.Success(groups)
-
                     appGroupList.clear()
-                    groups.forEach { group ->
-                        appGroupList.add(group.groupname!!)
-                    }
+                    appGroupList = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).GroupList
+                    downloadState.value = DownloadStatus.Success(appGroupList)
+
                     Log.d("TAG", "Successfully read and converted the data:")
-                    Log.d("TAG", groups.toString())
+                    Log.d("TAG", appGroupList.toString())
                 } catch (e: Exception) {
                     downloadState.value = DownloadStatus.Error(e.message.toString())
                     Log.d("TAG", "Failed to convert the data: ${e.message}")
@@ -63,7 +57,7 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun getGroupList(): ArrayList<String> {
+    fun getGroupList(): ArrayList<Group> {
         return appGroupList
     }
 

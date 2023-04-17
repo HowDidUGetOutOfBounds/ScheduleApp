@@ -1,14 +1,19 @@
 package com.example.scheduleapp.UI
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.MainScreenAdapter
 import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.DownloadStatus
+import com.example.scheduleapp.data.Group
 import com.example.scheduleapp.databinding.FragmentContainerBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 
@@ -36,7 +41,8 @@ class FragmentContainer: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewPager2()
+        viewModel.UpdateGroups()
+        initObservers()
     }
 
     override fun onStart() {
@@ -52,6 +58,30 @@ class FragmentContainer: Fragment() {
         TabLayoutMediator(binding.tabLayout, binding.fragmentViewPager2){ tab, position ->
             tab.text = position.toString()
         }.attach()
+    }
+
+    private fun initObservers() {
+        viewModel.downloadState.observe(viewLifecycleOwner) { downloadStatus ->
+
+            when (downloadStatus) {
+                is DownloadStatus.Progress -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is DownloadStatus.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(activity, "Failed to download Schedule: ${downloadStatus.message}", Toast.LENGTH_LONG)
+                        .show()
+                }
+                is DownloadStatus.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    setupViewPager2()
+                }
+            }
+        }
+    }
+
+    fun getGroupList(): ArrayList<Group> {
+        return viewModel.getGroupList()
     }
 
     companion object {

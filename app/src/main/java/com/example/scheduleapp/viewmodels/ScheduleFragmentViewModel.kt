@@ -1,30 +1,26 @@
 package com.example.scheduleapp.viewmodels
 
+
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.scheduleapp.data.*
+import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Date
+import com.example.scheduleapp.data.Day
+import com.example.scheduleapp.data.Group
 import com.example.scheduleapp.models.FirebaseRepository
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.Calendar
+import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class ScheduleFragmentViewModel @Inject constructor(
     private val rImplementation: FirebaseRepository, private val sPreferences: SharedPreferences
 ) : ViewModel() {
-    //var appGroupArray: ArrayList<Group> = arrayListOf()
-    val downloadStatus: MutableLiveData<DownloadStatus> = MutableLiveData()
 
-    init {
-        getAll()
-    }
 
-    private fun getDayWithOffset(index: Int): Date{
-        val position = index - 2
+    fun getDayWithOffset(index: Int): Date? {
+        var position = index - 2
         val c = Calendar.getInstance()
 
         if (position != 0) {
@@ -47,33 +43,22 @@ class ScheduleFragmentViewModel @Inject constructor(
             Log.d("TAGSchedule", "Database date ${item.date} ")
             if (currentDate == item.date) {
                 return item
+
             }
         }
         return null
     }
 
     fun getGroup(arrayListGroup: ArrayList<Group>): Group? {
-        val groupName =
-            sPreferences.getString(Constants.APP_PREFERENCES_GROUP + "_" + rImplementation.getCurrentUser()!!.email.toString(), "1K9291")
-        for(item in arrayListGroup){
-            if (groupName==item.groupname){
+        val groupName = sPreferences.getString(
+            Constants.APP_PREFERENCES_GROUP + "_" + rImplementation.getCurrentUser()!!.email.toString(),
+            null
+        )
+        for (item in arrayListGroup) {
+            if (groupName == item.groupname) {
                 return item
             }
         }
         return null
-    }
-
-    fun getAll() {
-        downloadStatus.value = DownloadStatus.Progress
-        try {
-            rImplementation.downloadDB().addOnCompleteListener { text ->
-                val appGroupArray = Gson().fromJson(
-                    text.result.value.toString(), GroupArray::class.java
-                ).GroupList
-                downloadStatus.value = DownloadStatus.Success(appGroupArray)
-            }
-        } catch (e: Exception) {
-            downloadStatus.value = DownloadStatus.Error(e.message.toString())
-        }
     }
 }
