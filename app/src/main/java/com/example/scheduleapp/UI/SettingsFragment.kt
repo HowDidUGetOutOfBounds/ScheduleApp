@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Group
 import com.example.scheduleapp.databinding.FragmentSettingsBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,7 +50,7 @@ class SettingsFragment : Fragment() {
                 .apply()
         }
 
-        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, viewModel.getGroupList()).also { adapter ->
+        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, getNameList(viewModel.getGroupList())).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
@@ -82,6 +83,14 @@ class SettingsFragment : Fragment() {
 
         requireView().findNavController()
             .navigate(SettingsFragmentDirections.actionSettingsFragmentToLoginFragment())
+    }
+
+    fun getNameList(groups: ArrayList<Group>): ArrayList<String> {
+        var groupNames = arrayListOf<String>()
+        groups.forEach { group ->
+            groupNames.add(group.groupname!!)
+        }
+        return groupNames
     }
 
     fun getGroupPreferencesId(): String {
