@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UI.LoginFragment"
-    android:background="@color/purple_700">
+    android:background="@color/background_color_default">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/userEmail_Layout"

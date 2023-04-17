@@ -19,11 +19,7 @@ class ScheduleFragmentViewModel @Inject constructor(
     private val rImplementation: FirebaseRepository, private val sPreferences: SharedPreferences
 ) : ViewModel() {
     //var appGroupArray: ArrayList<Group> = arrayListOf()
-    val downloadStatus: MutableLiveData<DownloadStatus> = MutableLiveData()
-
-    init {
-        getAll()
-    }
+    //val downloadStatus: MutableLiveData<DownloadStatus> = MutableLiveData()
 
     fun getDayWithOffset(index: Int): Date? {
         var position = index - 2
@@ -56,26 +52,12 @@ class ScheduleFragmentViewModel @Inject constructor(
 
     fun getGroup(arrayListGroup: ArrayList<Group>): Group? {
         val groupName =
-            sPreferences.getString(Constants.APP_PREFERENCES_GROUP + "_" + rImplementation.getCurrentUser()!!.email.toString(), "1K9291")
+            sPreferences.getString(Constants.APP_PREFERENCES_GROUP + "_" + rImplementation.getCurrentUser()!!.email.toString(), null)
         for(item in arrayListGroup){
             if (groupName==item.groupname){
                 return item
             }
         }
         return null
-    }
-
-    fun getAll() {
-        downloadStatus.value = DownloadStatus.Progress
-        try {
-            rImplementation.downloadDB().addOnCompleteListener { text ->
-                var appGroupArray = Gson().fromJson(
-                    text.result.value.toString(), GroupArray::class.java
-                ).GroupList
-                downloadStatus.value = DownloadStatus.Success(appGroupArray)
-            }
-        } catch (e: Exception) {
-            downloadStatus.value = DownloadStatus.Error(e.message.toString())
-        }
     }
 }

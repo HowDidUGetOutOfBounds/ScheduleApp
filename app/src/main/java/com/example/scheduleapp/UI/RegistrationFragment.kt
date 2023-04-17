@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Group
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -44,7 +45,7 @@ class RegistrationFragment : Fragment() {
                 .apply()
         }
 
-        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), android.R.layout.simple_spinner_item, viewModel.getGroupList()).also { adapter ->
+        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), android.R.layout.simple_spinner_item, getNameList(viewModel.getGroupList())).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
@@ -137,6 +138,14 @@ class RegistrationFragment : Fragment() {
                 }
             }
         }
+    }
+
+    fun getNameList(groups: ArrayList<Group>): ArrayList<String> {
+        var groupNames = arrayListOf<String>()
+        groups.forEach { group ->
+            groupNames.add(group.groupname!!)
+        }
+        return groupNames
     }
 
     companion object {

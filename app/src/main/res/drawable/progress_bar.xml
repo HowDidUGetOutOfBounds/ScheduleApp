@@ -15,7 +15,7 @@
             android:height="76dip"/>
         <gradient
             android:angle="0"
-            android:endColor="@color/purple_700"
+            android:endColor="@color/background_color_default"
             android:startColor="@color/blue"/>
     </shape>
 
