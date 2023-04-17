@@ -8,15 +8,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants
-import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentLoginBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
-import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,7 +56,7 @@ class LoginFragment : Fragment() {
                 .navigate(LoginFragmentDirections.actionLoginFragmentToResetFragment())
         }
 
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail ))
         binding.userPassword.addTextChangedListener(getBlankStringsChecker(binding.userPassword))
 
         binding.loginButton.setOnClickListener {
@@ -75,7 +74,7 @@ class LoginFragment : Fragment() {
         }
     }
 
-    fun getBlankStringsChecker(textInput: TextInputEditText): TextWatcher {
+    fun getBlankStringsChecker(textInput: EditText): TextWatcher {
         return object: TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
