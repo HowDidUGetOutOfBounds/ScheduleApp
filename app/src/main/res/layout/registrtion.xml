@@ -6,27 +6,16 @@
     android:layout_height="match_parent"
     android:background="#05080D">
 
-    <CheckBox
-        android:id="@+id/stayCheck"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:text="Stay signed in?"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/textView1"
         style="@style/MainText"
-        android:layout_width="291dp"
-        android:layout_height="92dp"
-        android:text="Вход в личный кабинет"
+        android:layout_width="311dp"
+        android:layout_height="46dp"
+        android:text="Забыли пароль?"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
     <EditText
         android:id="@+id/userEmail"
@@ -38,47 +27,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView1" />
 
-    <EditText
-        android:id="@+id/userPassword"
-        style="@style/EditText"
-        android:layout_marginTop="26dp"
-        android:hint="Введите ваш пароль"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/userEmail" />
-
-    <TextView
-        android:id="@+id/forgotButton"
-        style="@style/ClickableText"
-        android:layout_width="155dp"
-        android:layout_height="23dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="26dp"
-        android:text="Забыли пароль?"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userPassword" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/resetButton"
         style="@style/Button"
-        android:layout_marginTop="60dp"
-        android:text="Войти"
         android:enabled="false"
+        android:text="Отправить пароль на мой Email"
+        android:layout_marginTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/forgotButton"/>
+        app:layout_constraintTop_toBottomOf="@+id/userEmail" />
+
+
 
     <TextView
-        android:id="@+id/registerButton"
+        android:id="@+id/confirm"
         style="@style/ClickableText"
-        android:layout_width="194dp"
-        android:layout_height="23dp"
-        android:layout_marginTop="10dp"
-        android:text="Зарегестрироваться"
+        android:layout_width="360dp"
+        android:layout_height="45dp"
+        android:gravity="center"
+        android:layout_marginTop="120dp"
+        android:textColor="#B5B6BD"
+        android:clickable="false"
+        android:text="Восстановили пароль? Теперь вы можете войти"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginButton" />
+        app:layout_constraintTop_toBottomOf="@+id/resetButton" />
+
+    <TextView
+        android:id="@+id/loginButton"
+        style="@style/ClickableText"
+        android:layout_width="57dp"
+        android:layout_height="23dp"
+        android:layout_marginTop="13dp"
+        android:text="Войти"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/confirm" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -90,7 +75,10 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
