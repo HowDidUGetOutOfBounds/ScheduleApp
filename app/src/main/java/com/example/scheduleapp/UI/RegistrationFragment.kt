@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,7 +19,6 @@ import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.data.Group
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
-import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -86,7 +86,7 @@ class RegistrationFragment : Fragment() {
         }
     }
 
-    fun getBlankStringsChecker(textInput: TextInputEditText): TextWatcher {
+    fun getBlankStringsChecker(textInput: EditText): TextWatcher {
         return object: TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
@@ -136,6 +136,7 @@ class RegistrationFragment : Fragment() {
                     binding.loginButton.isEnabled = false
                     binding.progressBar.visibility = View.VISIBLE
                 }
+                else -> {}
             }
         }
     }

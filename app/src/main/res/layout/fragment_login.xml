@@ -51,8 +51,7 @@
     <TextView
         android:id="@+id/forgotButton"
         style="@style/ClickableText"
-        android:layout_width="155dp"
-        android:layout_height="23dp"
+        android:layout_width="156dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="26dp"
         android:text="Забыли пароль?"
@@ -72,8 +71,7 @@
     <TextView
         android:id="@+id/registerButton"
         style="@style/ClickableText"
-        android:layout_width="194dp"
-        android:layout_height="23dp"
+        android:layout_width="195dp"
         android:layout_marginTop="10dp"
         android:text="Зарегестрироваться"
         app:layout_constraintEnd_toEndOf="parent"
