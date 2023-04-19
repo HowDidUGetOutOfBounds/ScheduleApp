@@ -1,146 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UI.RegistrationFragment"
-    android:background="@color/background_color_default">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#05080D">
 
     <CheckBox
         android:id="@+id/stayCheck"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginEnd="28dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:text="Stay signed in?"
         android:textColor="@color/white"
         android:textSize="14sp"
-        android:text="Stay signed in?"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView1"
+        style="@style/MainText"
+        android:layout_width="241dp"
+        android:layout_height="46dp"
+        android:text="Регистрация"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <Spinner
         android:id="@+id/selectGroupSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginRight="70dp"
-        android:layout_marginEnd="28dp"
-        android:background="@color/white"
-        android:textColor = "@color/black"
-        tools:hintTextColor="@color/white"/>
+        android:layout_width="385dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/border_spinner"
+        app:layout_constraintTop_toBottomOf="@id/textView1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/userEmail_Layout"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="42dp"
-        android:layout_marginEnd="28dp"
-        android:hint="Enter your email"
-        android:padding="5dp"
-        tools:hintTextColor = "@color/white">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/userEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor = "@color/black"
-            tools:hintTextColor = "@color/white"
-            android:inputType="textEmailAddress"
-            android:textSize="14sp"/>
-    </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/userPassword1_Layout"
-        android:layout_centerHorizontal="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/userEmail_Layout"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="35dp"
-        android:layout_marginEnd="28dp"
-        android:hint="Create a password"
-        android:padding="5dp"
-        android:textColor="@color/white"
-        tools:hintTextColor="@color/white">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/userPassword1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor = "@color/black"
-            tools:hintTextColor = "@color/white"
-            android:inputType="textPassword"
-            android:textSize="14sp"/>
-    </com.google.android.material.textfield.TextInputLayout>
+    <EditText
+        android:id="@+id/userEmail"
+        style="@style/EditText"
+        android:layout_marginTop="20dp"
+        android:hint="Введите ваш Email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/selectGroupSpinner" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/userPassword2_Layout"
-        android:layout_centerHorizontal="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/userPassword1_Layout"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="35dp"
-        android:layout_marginEnd="28dp"
-        android:hint="Confirm your password"
-        android:padding="5dp"
-        android:textColor="@color/white"
-        tools:hintTextColor="@color/white">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/userPassword2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor = "@color/black"
-            tools:hintTextColor = "@color/white"
-            android:inputType="textPassword"
-            android:textSize="14sp"/>
-    </com.google.android.material.textfield.TextInputLayout>
+    <EditText
+        android:id="@+id/userPassword1"
+        style="@style/EditText"
+        android:layout_marginTop="20dp"
+        android:hint="Введите ваш пароль"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/userEmail" />
+
+    <EditText
+        android:id="@+id/userPassword2"
+        style="@style/EditText"
+        android:layout_marginTop="20dp"
+        android:hint="Повторите пароль"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/userPassword1" />
+
 
     <Button
         android:id="@+id/registerButton"
-        android:enabled="false"
-        android:layout_centerHorizontal="true"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/userPassword2_Layout"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="35dp"
-        android:layout_marginEnd="28dp"
-        android:text="Register"
-        android:textAllCaps="false"
-        android:textColor="@color/white"/>
+        style="@style/Button"
+        android:layout_marginTop="100dp"
+        android:text="Зарегестрироваться"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/userPassword2" />
+
 
     <TextView
-        android:id="@+id/loginLabel"
-        android:layout_centerHorizontal="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/registerButton"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="56dp"
-        android:layout_marginEnd="28dp"
-        android:text="Already have an account? Then you can log in."
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        tools:hintTextColor="@color/white"/>
-
-    <Button
         android:id="@+id/loginButton"
-        android:layout_centerHorizontal="true"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/loginLabel"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="28dp"
-        android:text="Log in"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
-    
+        style="@style/ClickableText"
+        android:layout_width="176dp"
+        android:layout_marginTop="10dp"
+        android:text="Уже есть аккаунт?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerButton"
+        />
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -148,6 +99,11 @@
         android:layout_centerInParent="true"
         android:indeterminate="true"
         android:indeterminateDrawable="@drawable/progress_bar"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

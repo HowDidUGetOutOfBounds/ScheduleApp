@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import com.example.scheduleapp.R
 import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.data.Group
@@ -45,8 +46,8 @@ class RegistrationFragment : Fragment() {
                 .apply()
         }
 
-        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), android.R.layout.simple_spinner_item, getNameList(viewModel.getGroupList())).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, getNameList(viewModel.getGroupList())).also { adapter ->
+            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
             if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(Constants.APP_PREFERENCES_GROUP_REGISTER, "")) {
