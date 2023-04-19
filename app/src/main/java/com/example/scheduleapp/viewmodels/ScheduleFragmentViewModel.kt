@@ -20,7 +20,7 @@ class ScheduleFragmentViewModel @Inject constructor(
 
 
     fun getDayWithOffset(index: Int): Date? {
-        var position = index - 2
+        var position = index - 7
         val c = Calendar.getInstance()
 
         if (position != 0) {

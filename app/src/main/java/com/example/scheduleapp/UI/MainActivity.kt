@@ -1,5 +1,7 @@
 package com.example.scheduleapp.UI
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -23,6 +25,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(Color.parseColor("#05080D")))
+
 
         viewModel.editPreferences()
             .putBoolean(Constants.APP_PREFERENCES_STAY, viewModel.getPreference(Constants.APP_PREFERENCES_STAY, true))

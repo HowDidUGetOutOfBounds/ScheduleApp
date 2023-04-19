@@ -9,8 +9,9 @@
 
     <Spinner
         android:id="@+id/selectGroupSpinner"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_width="385dp"
+        android:layout_height="62dp"
+        android:background="@drawable/border_spinner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
