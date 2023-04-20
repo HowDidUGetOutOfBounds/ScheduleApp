@@ -39,14 +39,7 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.stayCheck.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
-        binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
-            viewModel.editPreferences()
-                .putBoolean(Constants.APP_PREFERENCES_STAY, isChecked)
-                .apply()
-        }
-
-        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, getTitles(viewModel.getSchedule().groupList)).also { adapter ->
+        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, viewModel.getGroupNames()).also { adapter ->
             adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
@@ -140,14 +133,6 @@ class RegistrationFragment : Fragment() {
                 else -> {}
             }
         }
-    }
-
-    fun getTitles(groups: ArrayList<Data_IntString>): ArrayList<String> {
-        var groupNames = arrayListOf<String>()
-        groups.forEach { group ->
-            groupNames.add(group.title!!)
-        }
-        return groupNames
     }
 
     companion object {

@@ -16,7 +16,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
@@ -59,6 +61,30 @@ class MainActivityViewModel @Inject constructor(
     fun getSchedule(): FlatSchedule {
         return flatSchedule
     }
+
+    fun getGroupNames(): ArrayList<String> {
+        val groupNames = arrayListOf<String>()
+        for (item in flatSchedule.groupList) {
+            groupNames.add(item.title!!)
+        }
+        return groupNames
+    }
+
+    fun getDayToTab(index: Int): String {
+        var position = index - 7
+        val c = Calendar.getInstance()
+
+        if (position != 0) {
+            c.add(Calendar.DATE, position)
+        }
+
+        val weekDay=Constants.APP_PREFERENCE_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK)-1]
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+        return "$weekDay${System.getProperty("line.separator")}$day"
+    }
+
+
 
     fun getCurrentUser(): FirebaseUser? {
         return rImplementation.getCurrentUser()

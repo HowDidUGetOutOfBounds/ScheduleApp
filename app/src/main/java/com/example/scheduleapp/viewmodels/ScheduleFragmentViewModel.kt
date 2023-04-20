@@ -16,22 +16,7 @@ class ScheduleFragmentViewModel @Inject constructor(
     private val rImplementation: FirebaseRepository, private val sPreferences: SharedPreferences
 ) : ViewModel() {
 
-
-    fun getDayToTab( index: Int): String {
-        var position = index - 7
-        val c = Calendar.getInstance()
-
-        if (position != 0) {
-            c.add(Calendar.DATE, position)
-        }
-
-        val weekDay=Constants.APP_PREFERENCE_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK)-1]
-        val day = c.get(Calendar.DAY_OF_MONTH)
-
-        return "$weekDay${System.getProperty("line.separator")}$day"
-    }
-
-    fun getDayWithOffset( index: Int): Date {
+    fun getDayWithOffset(index: Int): Date {
         var position = index - 7
         val c = Calendar.getInstance()
 
@@ -45,9 +30,19 @@ class ScheduleFragmentViewModel @Inject constructor(
         return Date(year, month, day)
     }
 
-    fun getDayId(schedule: FlatSchedule, index: Int): Int? {
+    fun getGroup(): String? {
+        if (rImplementation.getCurrentUser() == null) {
+            return null
+        }
+        val groupName = sPreferences.getString(
+            Constants.APP_PREFERENCES_GROUP + "_" + rImplementation.getCurrentUser()!!.email.toString(), null
+        )
+        return groupName
+    }
+
+    fun getDayId(dayList: ArrayList<Data_IntDate>, index: Int): Int? {
         val date = getDayWithOffset(index)
-        for (item in schedule.dayList) {
+        for (item in dayList) {
             if (date == item.date) {
                 return item.id
             }
@@ -55,14 +50,11 @@ class ScheduleFragmentViewModel @Inject constructor(
         return null
     }
 
-    fun getGroupId(schedule: FlatSchedule): Int? {
-        if (rImplementation.getCurrentUser() == null) {
+    fun getGroupId(groupList: ArrayList<Data_IntString>, groupName: String?): Int? {
+        if (groupName == null) {
             return null
         }
-        val groupName = sPreferences.getString(
-            Constants.APP_PREFERENCES_GROUP + "_" + rImplementation.getCurrentUser()!!.email.toString(), null
-        )
-        for (item in schedule.groupList) {
+        for (item in groupList) {
             if (groupName == item.title) {
                 return item.id
             }
@@ -154,5 +146,5 @@ class ScheduleFragmentViewModel @Inject constructor(
         }
         return null
     }
-*/
+    */
 }

@@ -119,14 +119,6 @@ class LoginFragment : Fragment() {
     }
 
     fun InitializeView() {
-        binding.stayCheck.isEnabled = true
-        binding.stayCheck.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
-        binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
-            viewModel.editPreferences()
-                .putBoolean(Constants.APP_PREFERENCES_STAY, isChecked)
-                .apply()
-        }
-
         binding.registerButton.setOnClickListener {
             requireView().findNavController()
                 .navigate(LoginFragmentDirections.actionLoginFragmentToRegistrationFragment())

@@ -41,8 +41,8 @@ class ScheduleFragment() : Fragment() {
 
         if (index != null) {
             val flatSchedule = (parentFragment as FragmentContainer).getSchedule()
-            val currentGroup = viewModel.getGroupId(flatSchedule)
-            val currentDate = viewModel.getDayId(flatSchedule, index!!)
+            val currentGroup = viewModel.getGroupId(flatSchedule.groupList, viewModel.getGroup())
+            val currentDate = viewModel.getDayId(flatSchedule.dayList, index!!)
             Log.d("TAG_FS", "currentGroup = ${currentGroup.toString()}, currentDay = ${currentDate.toString()}, index = ${index!!}")
             if (currentGroup != null && currentDate != null) {
                 var currentSchedule = viewModel.getScheduleByGroupAndDay(currentGroup, currentDate, flatSchedule)

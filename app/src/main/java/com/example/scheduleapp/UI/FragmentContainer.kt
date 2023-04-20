@@ -59,7 +59,6 @@ class FragmentContainer : Fragment() {
             tab.text = position.toString()
         }.attach()
 
-        val viewModel: ScheduleFragmentViewModel by activityViewModels()
         for (i in 0..14) {
             binding.tabLayout.getTabAt(i)?.text = viewModel.getDayToTab(i)
         }

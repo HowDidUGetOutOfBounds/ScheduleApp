@@ -50,7 +50,7 @@ class SettingsFragment : Fragment() {
                 .apply()
         }
 
-        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, getTitles(viewModel.getSchedule().groupList)).also { adapter ->
+        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, viewModel.getGroupNames()).also { adapter ->
             adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
@@ -83,14 +83,6 @@ class SettingsFragment : Fragment() {
 
         requireView().findNavController()
             .navigate(SettingsFragmentDirections.actionSettingsFragmentToLoginFragment())
-    }
-
-    fun getTitles(groups: ArrayList<Data_IntString>): ArrayList<String> {
-        var groupNames = arrayListOf<String>()
-        groups.forEach { group ->
-            groupNames.add(group.title!!)
-        }
-        return groupNames
     }
 
     fun getGroupPreferencesId(): String {
