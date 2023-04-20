@@ -57,14 +57,4 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-
-    override fun onDestroy() {
-        if (!viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)) {
-            if (viewModel.getCurrentUser() != null) {
-                viewModel.signOut()
-            }
-        }
-        super.onDestroy()
-    }
 }

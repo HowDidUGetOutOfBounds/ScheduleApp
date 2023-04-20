@@ -10,10 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.scheduleapp.adapters.ScheduleRecyclerViewAdapter
-
-import com.example.scheduleapp.data.Day
-import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.data.Schedule
+import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentScheduleBinding
 import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,55 +36,18 @@ class ScheduleFragment() : Fragment() {
     }
 
     override fun onViewCreated(itemView: View, savedInstanceState: Bundle?) {
-        /*
-        viewModel.getAll()
-        initObservers()
-
-        val args = arguments
-        index = args?.getInt("index", 0)
-    }
-
-    private fun initObservers() {
-        viewModel.downloadStatus.observe(viewLifecycleOwner) { downloadStatus ->
-
-            when (downloadStatus) {
-                is DownloadStatus.Progress -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                is DownloadStatus.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(activity, "Failed to download Schedule", Toast.LENGTH_LONG)
-                        .show()
-                }
-                is DownloadStatus.Success -> {
-                    val groupList = downloadStatus.result
-                    binding.progressBar.visibility = View.GONE
-                    if (groupList.size > 0) {
-                        if (index != null) {
-                            val currentGroup = viewModel.getGroup(groupList)
-                            if (currentGroup != null) {
-                                val currentSchedule = viewModel.checkDate(index!!, currentGroup)
-                                if (currentSchedule != null) {
-                                    scheduleRecyclerViewAdapter.differ.submitList(currentSchedule.dayschedule)
-                                    binding.apply {
-                                        schedulesRecyclerView.apply {
-                                            layoutManager = LinearLayoutManager(activity)
-                                            adapter = scheduleRecyclerViewAdapter
-                                        }
-                                    }
-                                }
-                            }
-    */
-
         val args = arguments
         index = args?.getInt("index", 0)
 
         if (index != null) {
-            var currentGroup = viewModel.getGroup((parentFragment as FragmentContainer).getGroupList())
-            if (currentGroup != null) {
-                var currentSchedule = viewModel.checkDate(index!!, currentGroup)
+            val flatSchedule = (parentFragment as FragmentContainer).getSchedule()
+            val currentGroup = viewModel.getGroupId(flatSchedule)
+            val currentDate = viewModel.getDayId(flatSchedule, index!!)
+            Log.d("TAG_FS", "currentGroup = ${currentGroup.toString()}, currentDay = ${currentDate.toString()}, index = ${index!!}")
+            if (currentGroup != null && currentDate != null) {
+                var currentSchedule = viewModel.getScheduleByGroupAndDay(currentGroup, currentDate, flatSchedule)
                 if (currentSchedule != null) {
-                    scheduleRecyclerViewAdapter.differ.submitList(currentSchedule.dayschedule)
+                    scheduleRecyclerViewAdapter.differ.submitList(currentSchedule)
                     binding.apply {
                         schedulesRecyclerView.apply {
                             layoutManager = LinearLayoutManager(activity)

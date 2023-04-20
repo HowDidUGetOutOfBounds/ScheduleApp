@@ -23,9 +23,9 @@ class MainActivityViewModel @Inject constructor(
     private val rImplementation: FirebaseRepository,
     private val sPreferences: SharedPreferences
 ) : ViewModel() {
-    val downloadState: MutableLiveData<DownloadStatus> = MutableLiveData()
-    val authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
-    private var appGroupList = ArrayList<Group>()
+    var downloadState: MutableLiveData<DownloadStatus> = MutableLiveData()
+    var authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
+    private var flatSchedule = FlatSchedule()
 
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
@@ -40,12 +40,11 @@ class MainActivityViewModel @Inject constructor(
                 Log.d("TAG", task.result.value.toString())
 
                 try {
-                    appGroupList.clear()
-                    appGroupList = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).GroupList
-                    downloadState.value = DownloadStatus.Success(appGroupList)
+                    flatSchedule = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).FlatSchedule!!
+                    downloadState.value = DownloadStatus.Success(flatSchedule)
 
                     Log.d("TAG", "Successfully read and converted the data:")
-                    Log.d("TAG", appGroupList.toString())
+                    Log.d("TAG", flatSchedule.toString())
                 } catch (e: Exception) {
                     downloadState.value = DownloadStatus.Error(e.message.toString())
                     Log.d("TAG", "Failed to convert the data: ${e.message}")
@@ -57,8 +56,8 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun getGroupList(): ArrayList<Group> {
-        return appGroupList
+    fun getSchedule(): FlatSchedule {
+        return flatSchedule
     }
 
     fun getCurrentUser(): FirebaseUser? {
@@ -77,6 +76,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun signOut() {
+        authState = MutableLiveData()
         rImplementation.signOut()
     }
 

@@ -2,6 +2,7 @@ package com.example.scheduleapp.UI
 
 import android.opengl.Visibility
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +14,7 @@ import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.MainScreenAdapter
 import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.data.DownloadStatus
-import com.example.scheduleapp.data.Group
+import com.example.scheduleapp.data.FlatSchedule
 import com.example.scheduleapp.databinding.FragmentContainerBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 
@@ -80,8 +81,8 @@ class FragmentContainer: Fragment() {
         }
     }
 
-    fun getGroupList(): ArrayList<Group> {
-        return viewModel.getGroupList()
+    fun getSchedule(): FlatSchedule {
+        return viewModel.getSchedule()
     }
 
     companion object {

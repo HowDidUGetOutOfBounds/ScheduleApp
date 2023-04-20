@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentLoginBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,34 +37,15 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (viewModel.getCurrentUser() != null) {
-            view.findNavController()
-                .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
+            if (!viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)) {
+                viewModel.signOut()
+            } else {
+                view.findNavController()
+                    .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
+            }
         }
 
-        binding.stayCheck.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
-        binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
-            viewModel.editPreferences()
-                .putBoolean(Constants.APP_PREFERENCES_STAY, isChecked)
-                .apply()
-        }
-
-        binding.registerButton.setOnClickListener {
-            view.findNavController()
-                .navigate(LoginFragmentDirections.actionLoginFragmentToRegistrationFragment())
-        }
-        binding.forgotButton.setOnClickListener {
-            view.findNavController()
-                .navigate(LoginFragmentDirections.actionLoginFragmentToResetFragment())
-        }
-
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail ))
-        binding.userPassword.addTextChangedListener(getBlankStringsChecker(binding.userPassword))
-
-        binding.loginButton.setOnClickListener {
-            viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString(), false)
-        }
-
-        initObservers()
+        initDownloadObservers()
     }
 
     fun setButtonVisibility() {
@@ -88,7 +70,30 @@ class LoginFragment : Fragment() {
         }
     }
 
-    fun initObservers() {
+    fun initDownloadObservers() {
+        viewModel.downloadState.observe(viewLifecycleOwner) { downloadStatus ->
+            when (downloadStatus) {
+                is DownloadStatus.Progress -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is DownloadStatus.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(
+                        activity,
+                        "Failed to connect to DB: ${downloadStatus.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                is DownloadStatus.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    InitializeView()
+                    initAuthObservers()
+                }
+            }
+        }
+    }
+
+    fun initAuthObservers() {
         viewModel.authState.observe(viewLifecycleOwner) {authStatus->
             when (authStatus) {
                 is AuthenticationStatus.Success -> {
@@ -110,6 +115,34 @@ class LoginFragment : Fragment() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
             }
+        }
+    }
+
+    fun InitializeView() {
+        binding.stayCheck.isEnabled = true
+        binding.stayCheck.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
+        binding.stayCheck.setOnCheckedChangeListener { buttonView, isChecked ->
+            viewModel.editPreferences()
+                .putBoolean(Constants.APP_PREFERENCES_STAY, isChecked)
+                .apply()
+        }
+
+        binding.registerButton.setOnClickListener {
+            requireView().findNavController()
+                .navigate(LoginFragmentDirections.actionLoginFragmentToRegistrationFragment())
+        }
+        binding.forgotButton.setOnClickListener {
+            requireView().findNavController()
+                .navigate(LoginFragmentDirections.actionLoginFragmentToResetFragment())
+        }
+
+        binding.userEmail.isEnabled = true
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
+        binding.userPassword.isEnabled = true
+        binding.userPassword.addTextChangedListener(getBlankStringsChecker(binding.userPassword))
+
+        binding.loginButton.setOnClickListener {
+            viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString(), false)
         }
     }
 
