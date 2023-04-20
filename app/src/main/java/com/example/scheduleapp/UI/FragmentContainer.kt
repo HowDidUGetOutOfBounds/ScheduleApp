@@ -1,15 +1,12 @@
 package com.example.scheduleapp.UI
 
-import android.opengl.Visibility
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.MainScreenAdapter
 import com.example.scheduleapp.data.Constants
@@ -17,12 +14,12 @@ import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.data.FlatSchedule
 import com.example.scheduleapp.databinding.FragmentContainerBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
-
+import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FragmentContainer: Fragment() {
+class FragmentContainer : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var mainScreenAdapter: MainScreenAdapter
     private lateinit var binding: FragmentContainerBinding
@@ -32,8 +29,7 @@ class FragmentContainer: Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentContainerBinding.inflate(layoutInflater)
@@ -48,7 +44,10 @@ class FragmentContainer: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        (activity as MainActivity).title = viewModel.getPreference(Constants.APP_PREFERENCES_GROUP+"_"+viewModel.getCurrentUser()?.email.toString(), resources.getString(R.string.app_name))
+        (activity as MainActivity).title = viewModel.getPreference(
+            Constants.APP_PREFERENCES_GROUP + "_" + viewModel.getCurrentUser()?.email.toString(),
+            resources.getString(R.string.app_name)
+        )
     }
 
     private fun setupViewPager2() {
@@ -56,9 +55,14 @@ class FragmentContainer: Fragment() {
         binding.fragmentViewPager2.adapter = mainScreenAdapter
         binding.fragmentViewPager2.currentItem = 7
 
-        TabLayoutMediator(binding.tabLayout, binding.fragmentViewPager2){ tab, position ->
+        TabLayoutMediator(binding.tabLayout, binding.fragmentViewPager2) { tab, position ->
             tab.text = position.toString()
         }.attach()
+
+        val viewModel: ScheduleFragmentViewModel by activityViewModels()
+        for (i in 0..14) {
+            binding.tabLayout.getTabAt(i)?.text = viewModel.getDayToTab(i)
+        }
     }
 
     private fun initObservers() {
@@ -70,8 +74,11 @@ class FragmentContainer: Fragment() {
                 }
                 is DownloadStatus.Error -> {
                     binding.progressBar.visibility = View.GONE
-                    Toast.makeText(activity, "Failed to download Schedule: ${downloadStatus.message}", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(
+                        activity,
+                        "Failed to download Schedule: ${downloadStatus.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 is DownloadStatus.Success -> {
                     binding.progressBar.visibility = View.GONE
@@ -86,7 +93,6 @@ class FragmentContainer: Fragment() {
     }
 
     companion object {
-        fun newInstance() =
-            FragmentContainer()
+        fun newInstance() = FragmentContainer()
     }
 }
