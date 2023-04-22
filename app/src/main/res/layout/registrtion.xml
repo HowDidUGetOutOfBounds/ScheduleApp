@@ -71,7 +71,7 @@
         app:layout_constraintTop_toBottomOf="@+id/selectGroupSpinner" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/icon_notification"
         android:layout_width="23dp"
         android:layout_height="23dp"
         android:layout_marginStart="3dp"
@@ -108,25 +108,25 @@
         app:layout_constraintTop_toBottomOf="@id/textView" />
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/icon_logout"
         android:layout_width="23dp"
         android:layout_height="23dp"
         android:layout_marginStart="3dp"
         android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/logoutTrigger"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/icon_notification"
         app:srcCompat="@drawable/icon_logout" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/icon_contact"
         android:layout_width="23dp"
         android:layout_height="23dp"
         android:layout_marginStart="3dp"
         android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/logoutTrigger"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView1"
+        app:layout_constraintTop_toBottomOf="@+id/icon_logout"
         app:srcCompat="@drawable/icon_contact" />
     <TextView
         android:id="@+id/contactUsTextView"
