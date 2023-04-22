@@ -84,11 +84,12 @@ class LoginFragment : Fragment() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                is DownloadStatus.Success -> {
+                is DownloadStatus.SuccessLocal -> {
                     binding.progressBar.visibility = View.GONE
                     InitializeView()
                     initAuthObservers()
                 }
+                else -> {}
             }
         }
     }

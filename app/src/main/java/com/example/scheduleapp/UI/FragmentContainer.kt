@@ -38,7 +38,7 @@ class FragmentContainer : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.UpdateGroups()
+        viewModel.downloadSchedule()
         initObservers()
     }
 
@@ -79,16 +79,13 @@ class FragmentContainer : Fragment() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                is DownloadStatus.Success -> {
+                is DownloadStatus.SuccessGlobal -> {
                     binding.progressBar.visibility = View.GONE
                     setupViewPager2()
                 }
+                else -> {}
             }
         }
-    }
-
-    fun getSchedule(): FlatSchedule {
-        return viewModel.getSchedule()
     }
 
     companion object {

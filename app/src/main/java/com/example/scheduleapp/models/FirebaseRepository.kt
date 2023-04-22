@@ -8,6 +8,8 @@ import com.google.firebase.database.DataSnapshot
 interface FirebaseRepository {
     abstract fun downloadDB(): Task<DataSnapshot>
 
+    abstract fun downloadDBReference(reference: String): Task<DataSnapshot>
+
     abstract fun getCurrentUser(): FirebaseUser?
 
     abstract fun sendResetMessage(email: String): Task<Void>

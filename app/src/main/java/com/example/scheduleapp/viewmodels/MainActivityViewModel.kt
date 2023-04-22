@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -27,14 +28,39 @@ class MainActivityViewModel @Inject constructor(
 ) : ViewModel() {
     var downloadState: MutableLiveData<DownloadStatus> = MutableLiveData()
     var authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
+    private var groupList = arrayListOf<Data_IntString>()
     private var flatSchedule = FlatSchedule()
 
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
-        UpdateGroups()
+        downloadGroupList()
     }
 
-    fun UpdateGroups() {
+    fun downloadGroupList() {
+        downloadState.value = DownloadStatus.Progress
+        rImplementation.downloadDBReference("FlatSchedule/groupList").addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d("TAG", "Successfully downloaded specific data from the database:")
+                Log.d("TAG", task.result.value.toString())
+
+                try {
+                    groupList = Gson().fromJson(task.result.value.toString(), object : TypeToken<ArrayList<Data_IntString>>() {}.type)
+                    downloadState.value = DownloadStatus.SuccessLocal(groupList)
+
+                    Log.d("TAG", "Successfully read and converted specific data:")
+                    Log.d("TAG", groupList.toString())
+                } catch (e: Exception) {
+                    downloadState.value = DownloadStatus.Error(e.message.toString())
+                    Log.d("TAG", "Failed to convert specific data: ${e.message}")
+                }
+            } else {
+                downloadState.value = DownloadStatus.Error("Failed to download the data from the database.")
+                Log.d("TAG", "Failed to download specific data from the database.")
+            }
+        }
+    }
+
+    fun downloadSchedule() {
         downloadState.value = DownloadStatus.Progress
         rImplementation.downloadDB().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -43,7 +69,7 @@ class MainActivityViewModel @Inject constructor(
 
                 try {
                     flatSchedule = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).FlatSchedule!!
-                    downloadState.value = DownloadStatus.Success(flatSchedule)
+                    downloadState.value = DownloadStatus.SuccessGlobal(flatSchedule)
 
                     Log.d("TAG", "Successfully read and converted the data:")
                     Log.d("TAG", flatSchedule.toString())
@@ -64,7 +90,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun getGroupNames(): ArrayList<String> {
         val groupNames = arrayListOf<String>()
-        for (item in flatSchedule.groupList) {
+        for (item in groupList) {
             groupNames.add(item.title!!)
         }
         return groupNames

@@ -13,6 +13,7 @@ import com.example.scheduleapp.adapters.ScheduleRecyclerViewAdapter
 import com.example.scheduleapp.data.Schedule
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentScheduleBinding
+import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +22,8 @@ class ScheduleFragment() : Fragment() {
     var index: Int? = null
     private val scheduleRecyclerViewAdapter by lazy { ScheduleRecyclerViewAdapter() }
     private lateinit var binding: FragmentScheduleBinding
-    val viewModel: ScheduleFragmentViewModel by activityViewModels()
+    val viewModelLocal: ScheduleFragmentViewModel by activityViewModels()
+    val viewModelGlobal: MainActivityViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +42,12 @@ class ScheduleFragment() : Fragment() {
         index = args?.getInt("index", 0)
 
         if (index != null) {
-            val flatSchedule = (parentFragment as FragmentContainer).getSchedule()
-            val currentGroup = viewModel.getGroupId(flatSchedule.groupList, viewModel.getGroup())
-            val currentDate = viewModel.getDayId(flatSchedule.dayList, index!!)
+            val flatSchedule = viewModelGlobal.getSchedule()
+            val currentGroup = viewModelLocal.getGroupId(flatSchedule.groupList, viewModelLocal.getGroup())
+            val currentDate = viewModelLocal.getDayId(flatSchedule.dayList, index!!)
             Log.d("TAG_FS", "currentGroup = ${currentGroup.toString()}, currentDay = ${currentDate.toString()}, index = ${index!!}")
             if (currentGroup != null && currentDate != null) {
-                var currentSchedule = viewModel.getScheduleByGroupAndDay(currentGroup, currentDate, flatSchedule)
+                var currentSchedule = viewModelLocal.getScheduleByGroupAndDay(currentGroup, currentDate, flatSchedule)
                 if (currentSchedule != null) {
                     scheduleRecyclerViewAdapter.differ.submitList(currentSchedule)
                     binding.apply {

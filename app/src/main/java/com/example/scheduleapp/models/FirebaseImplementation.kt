@@ -12,6 +12,10 @@ class FirebaseImplementation(private val fDatabase: FirebaseDatabase, private va
         return fDatabase.getReference("").get()
     }
 
+    override fun downloadDBReference(reference: String): Task<DataSnapshot> {
+        return fDatabase.getReference(reference).get()
+    }
+
     override fun getCurrentUser(): FirebaseUser? {
         return fAuth.currentUser
     }
