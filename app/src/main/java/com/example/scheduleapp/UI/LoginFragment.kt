@@ -45,6 +45,7 @@ class LoginFragment : Fragment() {
             }
         }
 
+        viewModel.downloadGroupList()
         initDownloadObservers()
     }
 

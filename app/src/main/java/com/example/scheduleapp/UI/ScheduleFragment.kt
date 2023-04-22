@@ -47,7 +47,7 @@ class ScheduleFragment() : Fragment() {
             val currentDate = viewModelLocal.getDayId(flatSchedule.dayList, index!!)
             Log.d("TAG_FS", "currentGroup = ${currentGroup.toString()}, currentDay = ${currentDate.toString()}, index = ${index!!}")
             if (currentGroup != null && currentDate != null) {
-                var currentSchedule = viewModelLocal.getScheduleByGroupAndDay(currentGroup, currentDate, flatSchedule)
+                val currentSchedule = viewModelLocal.getScheduleByGroupAndDay(currentGroup, currentDate, flatSchedule)
                 if (currentSchedule != null) {
                     scheduleRecyclerViewAdapter.differ.submitList(currentSchedule)
                     binding.apply {

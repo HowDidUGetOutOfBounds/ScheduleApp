@@ -33,7 +33,6 @@ class MainActivityViewModel @Inject constructor(
 
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
-        downloadGroupList()
     }
 
     fun downloadGroupList() {

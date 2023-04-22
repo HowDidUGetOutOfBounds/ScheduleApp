@@ -15,6 +15,7 @@ import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.databinding.ActivityMainBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
