@@ -25,9 +25,6 @@ class ScheduleFragment() : Fragment() {
     val viewModelLocal: ScheduleFragmentViewModel by activityViewModels()
     val viewModelGlobal: MainActivityViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

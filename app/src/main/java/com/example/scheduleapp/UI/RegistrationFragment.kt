@@ -134,9 +134,4 @@ class RegistrationFragment : Fragment() {
             }
         }
     }
-
-    companion object {
-        fun newInstance() =
-            RegistrationFragment()
-    }
 }

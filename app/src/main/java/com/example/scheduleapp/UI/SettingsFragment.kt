@@ -89,8 +89,4 @@ class SettingsFragment : Fragment() {
         return Constants.APP_PREFERENCES_GROUP+"_"+viewModel.getCurrentUser()!!.email.toString()
     }
 
-    companion object {
-        fun newInstance() =
-            SettingsFragment()
-    }
 }

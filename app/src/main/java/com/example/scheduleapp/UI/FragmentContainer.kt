@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.MainScreenAdapter
+import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.data.FlatSchedule
@@ -23,10 +24,6 @@ class FragmentContainer : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var mainScreenAdapter: MainScreenAdapter
     private lateinit var binding: FragmentContainerBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -53,13 +50,13 @@ class FragmentContainer : Fragment() {
     private fun setupViewPager2() {
         mainScreenAdapter = MainScreenAdapter(this)
         binding.fragmentViewPager2.adapter = mainScreenAdapter
-        binding.fragmentViewPager2.currentItem = 7
+        binding.fragmentViewPager2.currentItem = PAGE_COUNT / 2
 
         TabLayoutMediator(binding.tabLayout, binding.fragmentViewPager2) { tab, position ->
             tab.text = position.toString()
         }.attach()
 
-        for (i in 0..14) {
+        for (i in 0 until PAGE_COUNT) {
             binding.tabLayout.getTabAt(i)?.text = viewModel.getDayToTab(i)
         }
     }
@@ -83,12 +80,10 @@ class FragmentContainer : Fragment() {
                     binding.progressBar.visibility = View.GONE
                     setupViewPager2()
                 }
-                else -> {}
+                is DownloadStatus.SuccessLocal -> {
+                    throw IllegalStateException()
+                }
             }
         }
-    }
-
-    companion object {
-        fun newInstance() = FragmentContainer()
     }
 }

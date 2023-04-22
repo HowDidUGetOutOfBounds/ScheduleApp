@@ -1,19 +1,15 @@
 package com.example.scheduleapp.viewmodels
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.scheduleapp.R
+import com.example.scheduleapp.utils.Utils.createUnsuccessfulTask
 import com.example.scheduleapp.data.*
-import com.example.scheduleapp.models.FirebaseImplementation
 import com.example.scheduleapp.models.FirebaseRepository
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,19 +27,27 @@ class MainActivityViewModel @Inject constructor(
     private var groupList = arrayListOf<Data_IntString>()
     private var flatSchedule = FlatSchedule()
 
+    private val timer = Timer()
+    private lateinit var listenerToRemove: OnCompleteListener<DataSnapshot>
+
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
     }
 
     fun downloadGroupList() {
         downloadState.value = DownloadStatus.Progress
-        rImplementation.downloadDBReference("FlatSchedule/groupList").addOnCompleteListener { task ->
+        setTimeout(5000L)
+        listenerToRemove = OnCompleteListener<DataSnapshot> { task ->
             if (task.isSuccessful) {
+                timer.cancel()
                 Log.d("TAG", "Successfully downloaded specific data from the database:")
                 Log.d("TAG", task.result.value.toString())
 
                 try {
-                    groupList = Gson().fromJson(task.result.value.toString(), object : TypeToken<ArrayList<Data_IntString>>() {}.type)
+                    groupList = Gson().fromJson(
+                        task.result.value.toString(),
+                        object : TypeToken<ArrayList<Data_IntString>>() {}.type
+                    )
                     downloadState.value = DownloadStatus.SuccessLocal(groupList)
 
                     Log.d("TAG", "Successfully read and converted specific data:")
@@ -53,10 +57,26 @@ class MainActivityViewModel @Inject constructor(
                     Log.d("TAG", "Failed to convert specific data: ${e.message}")
                 }
             } else {
-                downloadState.value = DownloadStatus.Error("Failed to download the data from the database.")
+                downloadState.postValue(
+                    DownloadStatus.Error("Failed to download the data from the database.")
+                )
                 Log.d("TAG", "Failed to download specific data from the database.")
             }
         }
+
+        rImplementation.downloadDBReference("FlatSchedule/groupList")
+            .addOnCompleteListener(listenerToRemove)
+    }
+
+    private fun setTimeout(time: Long) {
+        val timerTask = object : TimerTask() {
+            override fun run() {
+                listenerToRemove.onComplete(
+                    createUnsuccessfulTask()
+                )
+            }
+        }
+        timer.schedule(timerTask, time)
     }
 
     fun downloadSchedule() {
@@ -67,7 +87,10 @@ class MainActivityViewModel @Inject constructor(
                 Log.d("TAG", task.result.value.toString())
 
                 try {
-                    flatSchedule = Gson().fromJson(task.result.value.toString(), GroupArray::class.java).FlatSchedule!!
+                    flatSchedule = Gson().fromJson(
+                        task.result.value.toString(),
+                        GroupArray::class.java
+                    ).FlatSchedule!!
                     downloadState.value = DownloadStatus.SuccessGlobal(flatSchedule)
 
                     Log.d("TAG", "Successfully read and converted the data:")
@@ -77,7 +100,8 @@ class MainActivityViewModel @Inject constructor(
                     Log.d("TAG", "Failed to convert the data: ${e.message}")
                 }
             } else {
-                downloadState.value = DownloadStatus.Error("Failed to download the data from the database.")
+                downloadState.value =
+                    DownloadStatus.Error("Failed to download the data from the database.")
                 Log.d("TAG", "Failed to download the data from the database.")
             }
         }
@@ -103,12 +127,11 @@ class MainActivityViewModel @Inject constructor(
             c.add(Calendar.DATE, position)
         }
 
-        val weekDay=Constants.APP_PREFERENCE_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK)-1]
+        val weekDay = Constants.APP_PREFERENCE_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK) - 1]
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         return "$weekDay${System.getProperty("line.separator")}$day"
     }
-
 
 
     fun getCurrentUser(): FirebaseUser? {

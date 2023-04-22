@@ -78,7 +78,6 @@ class LoginFragment : Fragment() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is DownloadStatus.Error -> {
-                    binding.progressBar.visibility = View.GONE
                     Toast.makeText(
                         activity,
                         "Failed to connect to DB: ${downloadStatus.message}",
@@ -87,10 +86,12 @@ class LoginFragment : Fragment() {
                 }
                 is DownloadStatus.SuccessLocal -> {
                     binding.progressBar.visibility = View.GONE
-                    InitializeView()
+                    initializeView()
                     initAuthObservers()
                 }
-                else -> {}
+                is DownloadStatus.SuccessGlobal -> {
+                    throw IllegalStateException()
+                }
             }
         }
     }
@@ -120,7 +121,7 @@ class LoginFragment : Fragment() {
         }
     }
 
-    fun InitializeView() {
+    fun initializeView() {
         binding.registerButton.setOnClickListener {
             requireView().findNavController()
                 .navigate(LoginFragmentDirections.actionLoginFragmentToRegistrationFragment())
@@ -138,10 +139,5 @@ class LoginFragment : Fragment() {
         binding.loginButton.setOnClickListener {
             viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString(), false)
         }
-    }
-
-    companion object {
-        fun newInstance() =
-            LoginFragment()
     }
 }

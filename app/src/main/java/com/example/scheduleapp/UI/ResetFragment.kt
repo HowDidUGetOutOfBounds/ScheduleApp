@@ -91,9 +91,4 @@ class ResetFragment : Fragment() {
             }
         }
     }
-
-    companion object {
-        fun newInstance() =
-            ResetFragment()
-    }
 }
