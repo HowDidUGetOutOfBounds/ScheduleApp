@@ -5,13 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.scheduleapp.adapters.ScheduleRecyclerViewAdapter
-import com.example.scheduleapp.data.Schedule
-import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentScheduleBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
@@ -19,11 +16,11 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ScheduleFragment() : Fragment() {
-    var index: Int? = null
+    private var index: Int? = null
     private val scheduleRecyclerViewAdapter by lazy { ScheduleRecyclerViewAdapter() }
+    private val mainViewModel: MainActivityViewModel by activityViewModels()
+    private val scheduleViewModel: ScheduleFragmentViewModel by activityViewModels()
     private lateinit var binding: FragmentScheduleBinding
-    val viewModelLocal: ScheduleFragmentViewModel by activityViewModels()
-    val viewModelGlobal: MainActivityViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -39,12 +36,12 @@ class ScheduleFragment() : Fragment() {
         index = args?.getInt("index", 0)
 
         if (index != null) {
-            val flatSchedule = viewModelGlobal.getSchedule()
-            val currentGroup = viewModelLocal.getGroupId(flatSchedule.groupList, viewModelLocal.getGroup())
-            val currentDate = viewModelLocal.getDayId(flatSchedule.dayList, index!!)
+            val flatSchedule = mainViewModel.getSchedule()
+            val currentGroup = scheduleViewModel.getGroupId(flatSchedule.groupList, scheduleViewModel.getGroup())
+            val currentDate = scheduleViewModel.getDayId(flatSchedule.dayList, index!!)
             Log.d("TAG_FS", "currentGroup = ${currentGroup.toString()}, currentDay = ${currentDate.toString()}, index = ${index!!}")
             if (currentGroup != null && currentDate != null) {
-                val currentSchedule = viewModelLocal.getScheduleByGroupAndDay(currentGroup, currentDate, flatSchedule)
+                val currentSchedule = scheduleViewModel.getScheduleByGroupAndDay(currentGroup, currentDate, flatSchedule)
                 if (currentSchedule != null) {
                     scheduleRecyclerViewAdapter.differ.submitList(currentSchedule)
                     binding.apply {

@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.databinding.FragmentResetBinding
+import com.example.scheduleapp.utils.Utils.getBlankStringsChecker
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ResetFragment : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentResetBinding
+    private lateinit var setButtonVisibility: ()->Unit
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,7 +42,12 @@ class ResetFragment : Fragment() {
                 .navigate(ResetFragmentDirections.actionResetFragmentToLoginFragment())
         }
 
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
+        setButtonVisibility = {
+            if (viewModel.authState.value != AuthenticationStatus.Progress) {
+                binding.resetButton.isEnabled = !binding.userEmail.text.toString().isBlank()
+            }
+        }
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail, setButtonVisibility))
 
         binding.resetButton.setOnClickListener {
             viewModel.sendResetMessage(binding.userEmail.text.toString())
@@ -49,27 +56,7 @@ class ResetFragment : Fragment() {
         initObservers()
     }
 
-    fun setButtonVisibility() {
-        if (binding.progressBar.visibility == View.GONE) {
-            binding.resetButton.isEnabled = !binding.userEmail.text.toString().isBlank()
-        }
-    }
-
-    fun getBlankStringsChecker(textInput: EditText): TextWatcher {
-        return object: TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
-                    setButtonVisibility()
-                } else {
-                    textInput.setText(textInput.text.toString().replace(" ", ""))
-                }
-            }
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-        }
-    }
-
-    fun initObservers() {
+    private fun initObservers() {
         viewModel.authState.observe(viewLifecycleOwner) {authStatus->
             when (authStatus) {
                 is AuthenticationStatus.Success -> {

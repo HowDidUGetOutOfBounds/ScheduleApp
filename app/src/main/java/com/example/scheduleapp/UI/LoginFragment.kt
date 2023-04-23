@@ -14,8 +14,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Data_IntString
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentLoginBinding
+import com.example.scheduleapp.utils.Utils.getBlankStringsChecker
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginFragment : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentLoginBinding
+    private lateinit var setButtonVisibility: ()->Unit
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,43 +39,12 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (viewModel.getCurrentUser() != null) {
-            if (!viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)) {
-                viewModel.signOut()
-            } else {
-                view.findNavController()
-                    .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
-            }
-        }
-
         viewModel.downloadGroupList()
         initDownloadObservers()
     }
 
-    fun setButtonVisibility() {
-        if (binding.progressBar.visibility == View.GONE) {
-            binding.loginButton.isEnabled =
-                !(binding.userEmail.text.toString().isBlank() || binding.userPassword.text.toString().isBlank())
-                        && binding.userPassword.text.toString().count() >= Constants.APP_MIN_PASSWORD_LENGTH
-        }
-    }
-
-    fun getBlankStringsChecker(textInput: EditText): TextWatcher {
-        return object: TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
-                    setButtonVisibility()
-                } else {
-                    textInput.setText(textInput.text.toString().replace(" ", ""))
-                }
-            }
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-        }
-    }
-
-    fun initDownloadObservers() {
-        viewModel.downloadState.observe(viewLifecycleOwner) { downloadStatus ->
+    private fun initDownloadObservers() {
+        viewModel.groupsDownloadState.observe(viewLifecycleOwner) { downloadStatus ->
             when (downloadStatus) {
                 is DownloadStatus.Progress -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -80,23 +52,32 @@ class LoginFragment : Fragment() {
                 is DownloadStatus.Error -> {
                     Toast.makeText(
                         activity,
-                        "Failed to connect to DB: ${downloadStatus.message}",
+                        "Failed to download data from DB: ${downloadStatus.message}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                is DownloadStatus.SuccessLocal -> {
+                is DownloadStatus.Success<ArrayList<Data_IntString>> -> {
                     binding.progressBar.visibility = View.GONE
+
+                    if (viewModel.isUserSingedIn()) {
+                        if (!viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)) {
+                            viewModel.signOut()
+                        } else {
+                            requireView().findNavController()
+                                .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
+                        }
+                    }
                     initializeView()
                     initAuthObservers()
                 }
-                is DownloadStatus.SuccessGlobal -> {
+                else -> {
                     throw IllegalStateException()
                 }
             }
         }
     }
 
-    fun initAuthObservers() {
+    private fun initAuthObservers() {
         viewModel.authState.observe(viewLifecycleOwner) {authStatus->
             when (authStatus) {
                 is AuthenticationStatus.Success -> {
@@ -121,7 +102,7 @@ class LoginFragment : Fragment() {
         }
     }
 
-    fun initializeView() {
+    private fun initializeView() {
         binding.registerButton.setOnClickListener {
             requireView().findNavController()
                 .navigate(LoginFragmentDirections.actionLoginFragmentToRegistrationFragment())
@@ -131,10 +112,18 @@ class LoginFragment : Fragment() {
                 .navigate(LoginFragmentDirections.actionLoginFragmentToResetFragment())
         }
 
+        setButtonVisibility = {
+            if (viewModel.authState.value != AuthenticationStatus.Progress) {
+                binding.loginButton.isEnabled =
+                    !(binding.userEmail.text.toString().isBlank() || binding.userPassword.text.toString().isBlank())
+                            && binding.userPassword.text.toString().count() >= Constants.APP_MIN_PASSWORD_LENGTH
+            }
+        }
+
         binding.userEmail.isEnabled = true
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail, setButtonVisibility))
         binding.userPassword.isEnabled = true
-        binding.userPassword.addTextChangedListener(getBlankStringsChecker(binding.userPassword))
+        binding.userPassword.addTextChangedListener(getBlankStringsChecker(binding.userPassword, setButtonVisibility))
 
         binding.loginButton.setOnClickListener {
             viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword.text.toString(), false)

@@ -1,6 +1,9 @@
 package com.example.scheduleapp.utils
 
 import android.app.Activity
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
@@ -8,6 +11,20 @@ import com.google.firebase.database.DataSnapshot
 import java.util.concurrent.Executor
 
 object Utils {
+
+    fun getBlankStringsChecker(textInput: EditText, setButtonVisibility: ()->Unit): TextWatcher {
+        return object: TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
+                    setButtonVisibility()
+                } else {
+                    textInput.setText(textInput.text.toString().replace(" ", ""))
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        }
+    }
 
     /**
      * As firebase doesn't give us error on timeout and just keeps retrying,

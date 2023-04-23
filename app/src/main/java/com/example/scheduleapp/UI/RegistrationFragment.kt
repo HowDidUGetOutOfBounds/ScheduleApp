@@ -18,7 +18,9 @@ import com.example.scheduleapp.R
 import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.data.Data_IntString
+import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
+import com.example.scheduleapp.utils.Utils.getBlankStringsChecker
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class RegistrationFragment : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentRegistrationBinding
+    private lateinit var setButtonVisibility: ()->Unit
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,9 +53,7 @@ class RegistrationFragment : Fragment() {
         }
         binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.editPreferences()
-                    .putString(Constants.APP_PREFERENCES_GROUP_REGISTER, parent?.getItemAtPosition(position).toString())
-                    .apply()
+                viewModel.editPreferences(Constants.APP_PREFERENCES_GROUP_REGISTER, parent?.getItemAtPosition(position).toString())
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -62,9 +63,16 @@ class RegistrationFragment : Fragment() {
                 .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
         }
 
-        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail))
-        binding.userPassword1.addTextChangedListener(getBlankStringsChecker(binding.userPassword1))
-        binding.userPassword2.addTextChangedListener(getBlankStringsChecker(binding.userPassword2))
+        setButtonVisibility = {
+            if (viewModel.authState.value != AuthenticationStatus.Progress) {
+                binding.registerButton.isEnabled =
+                    !(binding.userEmail.text.toString().isBlank() || binding.userPassword1.text.toString().isBlank() || binding.userPassword2.text.toString().isBlank())
+            }
+        }
+
+        binding.userEmail.addTextChangedListener(getBlankStringsChecker(binding.userEmail, setButtonVisibility))
+        binding.userPassword1.addTextChangedListener(getBlankStringsChecker(binding.userPassword1, setButtonVisibility))
+        binding.userPassword2.addTextChangedListener(getBlankStringsChecker(binding.userPassword2, setButtonVisibility))
 
         binding.registerButton.setOnClickListener {
             signUp()
@@ -73,28 +81,7 @@ class RegistrationFragment : Fragment() {
         initObservers()
     }
 
-    fun setButtonVisibility() {
-        if (binding.progressBar.visibility == View.GONE) {
-            binding.registerButton.isEnabled =
-                !(binding.userEmail.text.toString().isBlank() || binding.userPassword1.text.toString().isBlank() || binding.userPassword2.text.toString().isBlank())
-        }
-    }
-
-    fun getBlankStringsChecker(textInput: EditText): TextWatcher {
-        return object: TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (textInput.text.toString().replace(" ", "") == textInput.text.toString()) {
-                    setButtonVisibility()
-                } else {
-                    textInput.setText(textInput.text.toString().replace(" ", ""))
-                }
-            }
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-        }
-    }
-
-    fun signUp() {
+    private fun signUp() {
         if (binding.userPassword1.text.toString().count() < Constants.APP_MIN_PASSWORD_LENGTH) {
             Toast.makeText(activity, "Your password should be at least ${Constants.APP_MIN_PASSWORD_LENGTH} characters long", Toast.LENGTH_SHORT).show()
         } else if (!binding.userPassword1.text.toString().equals(binding.userPassword2.text.toString())) {
@@ -104,7 +91,7 @@ class RegistrationFragment : Fragment() {
         }
     }
 
-    fun initObservers() {
+    private fun initObservers() {
         viewModel.authState.observe(viewLifecycleOwner) {authStatus->
             when (authStatus) {
                 is AuthenticationStatus.Success -> {
@@ -113,10 +100,8 @@ class RegistrationFragment : Fragment() {
                     Toast.makeText(activity, "Registered successfully.", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", "Successful registration")
 
-                    viewModel.editPreferences()
-                        .putString(Constants.APP_PREFERENCES_GROUP + "_" + binding.userEmail.text.toString(), viewModel.getPreference(Constants.APP_PREFERENCES_GROUP_REGISTER, ""))
-                        .putString(Constants.APP_PREFERENCES_GROUP_REGISTER, null)
-                        .apply()
+                    viewModel.editPreferences(Constants.APP_PREFERENCES_GROUP + "_" + binding.userEmail.text.toString(), viewModel.getPreference(Constants.APP_PREFERENCES_GROUP_REGISTER, ""))
+                    viewModel.editPreferences(Constants.APP_PREFERENCES_GROUP_REGISTER, null)
                     requireView().findNavController()
                         .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
                 }
@@ -130,7 +115,6 @@ class RegistrationFragment : Fragment() {
                     binding.loginButton.isEnabled = false
                     binding.progressBar.visibility = View.VISIBLE
                 }
-                else -> {}
             }
         }
     }

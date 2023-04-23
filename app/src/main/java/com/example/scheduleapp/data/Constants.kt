@@ -7,5 +7,6 @@ object Constants {
     const val APP_PREFERENCES_PUSHES = "APP_PREFERENCES_PUSHES_BOOL"
     const val APP_PREFERENCES_GROUP = "APP_PREFERENCES_GROUP"
     const val APP_PREFERENCES_GROUP_REGISTER = "APP_PREFERENCES_GROUP_REGISTER"
-    val APP_PREFERENCE_DAY_OF_WEEK = listOf("вс", "пн", "вт", "ср", "чт", "пт", "сб")
+    const val APP_BD_PATHS_GROUP_LIST = "FlatSchedule/groupList"
+    val APP_CALENDER_DAY_OF_WEEK = listOf("вс", "пн", "вт", "ср", "чт", "пт", "сб")
 }

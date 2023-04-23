@@ -29,11 +29,8 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(Color.parseColor("#05080D")))
 
-
-        viewModel.editPreferences()
-            .putBoolean(Constants.APP_PREFERENCES_STAY, viewModel.getPreference(Constants.APP_PREFERENCES_STAY, true))
-            .putBoolean(Constants.APP_PREFERENCES_PUSHES, viewModel.getPreference(Constants.APP_PREFERENCES_PUSHES, true))
-            .apply()
+        viewModel.editPreferences(Constants.APP_PREFERENCES_STAY, viewModel.getPreference(Constants.APP_PREFERENCES_STAY, true))
+        viewModel.editPreferences(Constants.APP_PREFERENCES_PUSHES, viewModel.getPreference(Constants.APP_PREFERENCES_PUSHES, true))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -44,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
-                if (viewModel.getCurrentUser() == null) {
+                if (!viewModel.isUserSingedIn()) {
                     Toast.makeText(this, "You aren't signed in yet.", Toast.LENGTH_SHORT).show()
                     return false
                 } else if (supportFragmentManager.primaryNavigationFragment!!.childFragmentManager.fragments.last()::class.java == SettingsFragment::class.java) {

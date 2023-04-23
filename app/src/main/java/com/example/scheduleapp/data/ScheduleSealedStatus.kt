@@ -9,3 +9,13 @@ sealed class AuthenticationStatus {
     object Progress: AuthenticationStatus()
 
 }
+
+sealed class DownloadStatus<out T> {
+
+    data class Success<T>(val result: T) : DownloadStatus<T>()
+
+    data class Error(val message: String) : DownloadStatus<Nothing>()
+
+    object Progress: DownloadStatus<Nothing>()
+
+}

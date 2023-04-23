@@ -40,14 +40,10 @@ class SettingsFragment : Fragment() {
         binding.enablePushesCheckBox.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_PUSHES, false)
         binding.staySignedInCheckBox.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
         binding.enablePushesCheckBox.setOnCheckedChangeListener(){v, checked ->
-            viewModel.editPreferences()
-                .putBoolean(Constants.APP_PREFERENCES_PUSHES, checked)
-                .apply()
+            viewModel.editPreferences(Constants.APP_PREFERENCES_PUSHES, checked)
         }
         binding.staySignedInCheckBox.setOnCheckedChangeListener(){v, checked ->
-            viewModel.editPreferences()
-                .putBoolean(Constants.APP_PREFERENCES_STAY, checked)
-                .apply()
+            viewModel.editPreferences(Constants.APP_PREFERENCES_STAY, checked)
         }
 
         binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, viewModel.getGroupNames()).also { adapter ->
@@ -61,9 +57,7 @@ class SettingsFragment : Fragment() {
         }
         binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.editPreferences()
-                    .putString(getGroupPreferencesId(), parent?.getItemAtPosition(position).toString())
-                    .apply()
+                viewModel.editPreferences(getGroupPreferencesId(), parent?.getItemAtPosition(position).toString())
                 (activity as MainActivity).title = viewModel.getPreference(getGroupPreferencesId(), resources.getString(R.string.app_name))
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -74,19 +68,17 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    fun logOut() {
+    private fun logOut() {
         viewModel.signOut()
-        viewModel.editPreferences()
-            .putBoolean(Constants.APP_PREFERENCES_STAY, false)
-            .apply()
+        viewModel.editPreferences(Constants.APP_PREFERENCES_STAY, false)
         (activity as MainActivity).title = resources.getString(R.string.app_name)
 
         requireView().findNavController()
             .navigate(SettingsFragmentDirections.actionSettingsFragmentToLoginFragment())
     }
 
-    fun getGroupPreferencesId(): String {
-        return Constants.APP_PREFERENCES_GROUP+"_"+viewModel.getCurrentUser()!!.email.toString()
+    private fun getGroupPreferencesId(): String {
+        return Constants.APP_PREFERENCES_GROUP+"_"+viewModel.getUserEmail()
     }
 
 }

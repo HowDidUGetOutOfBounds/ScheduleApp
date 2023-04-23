@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.utils.Utils.createUnsuccessfulTask
 import com.example.scheduleapp.data.*
 import com.example.scheduleapp.models.FirebaseRepository
@@ -13,6 +14,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -22,12 +24,14 @@ class MainActivityViewModel @Inject constructor(
     private val rImplementation: FirebaseRepository,
     private val sPreferences: SharedPreferences
 ) : ViewModel() {
-    var downloadState: MutableLiveData<DownloadStatus> = MutableLiveData()
     var authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
+    var groupsDownloadState: MutableLiveData<DownloadStatus<ArrayList<Data_IntString>>> = MutableLiveData()
+    var scheduleDownloadState: MutableLiveData<DownloadStatus<FlatSchedule>> = MutableLiveData()
+
     private var groupList = arrayListOf<Data_IntString>()
     private var flatSchedule = FlatSchedule()
 
-    private val timer = Timer()
+    private lateinit var timer: Timer
     private lateinit var listenerToRemove: OnCompleteListener<DataSnapshot>
 
     init {
@@ -35,8 +39,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun downloadGroupList() {
-        downloadState.value = DownloadStatus.Progress
+        groupsDownloadState.value = DownloadStatus.Progress
         setTimeout(5000L)
+
         listenerToRemove = OnCompleteListener<DataSnapshot> { task ->
             if (task.isSuccessful) {
                 timer.cancel()
@@ -48,41 +53,31 @@ class MainActivityViewModel @Inject constructor(
                         task.result.value.toString(),
                         object : TypeToken<ArrayList<Data_IntString>>() {}.type
                     )
-                    downloadState.value = DownloadStatus.SuccessLocal(groupList)
+                    groupsDownloadState.value = DownloadStatus.Success(groupList)
 
                     Log.d("TAG", "Successfully read and converted specific data:")
                     Log.d("TAG", groupList.toString())
                 } catch (e: Exception) {
-                    downloadState.value = DownloadStatus.Error(e.message.toString())
+                    groupsDownloadState.value = DownloadStatus.Error(e.message.toString())
                     Log.d("TAG", "Failed to convert specific data: ${e.message}")
                 }
             } else {
-                downloadState.postValue(
-                    DownloadStatus.Error("Failed to download the data from the database.")
-                )
+                groupsDownloadState.value = DownloadStatus.Error("Failed to download the data from the database.")
                 Log.d("TAG", "Failed to download specific data from the database.")
             }
         }
 
-        rImplementation.downloadDBReference("FlatSchedule/groupList")
+        rImplementation.downloadDBReference(Constants.APP_BD_PATHS_GROUP_LIST)
             .addOnCompleteListener(listenerToRemove)
     }
 
-    private fun setTimeout(time: Long) {
-        val timerTask = object : TimerTask() {
-            override fun run() {
-                listenerToRemove.onComplete(
-                    createUnsuccessfulTask()
-                )
-            }
-        }
-        timer.schedule(timerTask, time)
-    }
-
     fun downloadSchedule() {
-        downloadState.value = DownloadStatus.Progress
-        rImplementation.downloadDB().addOnCompleteListener { task ->
+        scheduleDownloadState.value = DownloadStatus.Progress
+        setTimeout(5000L)
+
+        listenerToRemove = OnCompleteListener<DataSnapshot> { task ->
             if (task.isSuccessful) {
+                timer.cancel()
                 Log.d("TAG", "Successfully downloaded the data from the database:")
                 Log.d("TAG", task.result.value.toString())
 
@@ -91,20 +86,35 @@ class MainActivityViewModel @Inject constructor(
                         task.result.value.toString(),
                         GroupArray::class.java
                     ).FlatSchedule!!
-                    downloadState.value = DownloadStatus.SuccessGlobal(flatSchedule)
+                    scheduleDownloadState.value = DownloadStatus.Success(flatSchedule)
 
                     Log.d("TAG", "Successfully read and converted the data:")
                     Log.d("TAG", flatSchedule.toString())
                 } catch (e: Exception) {
-                    downloadState.value = DownloadStatus.Error(e.message.toString())
+                    scheduleDownloadState.value = DownloadStatus.Error(e.message.toString())
                     Log.d("TAG", "Failed to convert the data: ${e.message}")
                 }
             } else {
-                downloadState.value =
-                    DownloadStatus.Error("Failed to download the data from the database.")
+                scheduleDownloadState.value = DownloadStatus.Error("Connection or network error.")
                 Log.d("TAG", "Failed to download the data from the database.")
             }
         }
+        rImplementation.downloadDB()
+            .addOnCompleteListener(listenerToRemove)
+    }
+
+    private fun setTimeout(time: Long) {
+        timer = Timer()
+        val timerTask = object : TimerTask() {
+            override fun run() {
+                MainScope().launch {
+                    listenerToRemove.onComplete(
+                        createUnsuccessfulTask()
+                    )
+                }
+            }
+        }
+        timer.schedule(timerTask, time)
     }
 
     fun getSchedule(): FlatSchedule {
@@ -120,22 +130,31 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun getDayToTab(index: Int): String {
-        var position = index - 7
+        val position = index - PAGE_COUNT/2
         val c = Calendar.getInstance()
 
         if (position != 0) {
             c.add(Calendar.DATE, position)
         }
 
-        val weekDay = Constants.APP_PREFERENCE_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK) - 1]
+        val weekDay = Constants.APP_CALENDER_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK) - 1]
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         return "$weekDay${System.getProperty("line.separator")}$day"
     }
 
+    fun isUserSingedIn(): Boolean {
+        if (rImplementation.getCurrentUser() != null) {
+            return true
+        }
+        return false
+    }
 
-    fun getCurrentUser(): FirebaseUser? {
-        return rImplementation.getCurrentUser()
+    fun getUserEmail(): String? {
+        if (!isUserSingedIn()) {
+            return null
+        }
+        return rImplementation.getCurrentUser()!!.email
     }
 
     fun signIn(email: String, password: String, newAccount: Boolean) {
@@ -165,8 +184,14 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun editPreferences(): SharedPreferences.Editor {
-        return sPreferences.edit()
+    fun <T> editPreferences(preference: String, value: T) {
+        val sEdit: SharedPreferences.Editor
+        if (preference.contains("_BOOL")) {
+            sEdit = sPreferences.edit().putBoolean(preference, (value as Boolean))
+        } else {
+            sEdit = sPreferences.edit().putString(preference, (value as String))
+        }
+        sEdit.apply()
     }
 
     fun <T> getPreference(preference: String, defValue: T): T {

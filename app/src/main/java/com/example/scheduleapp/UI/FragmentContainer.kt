@@ -42,7 +42,7 @@ class FragmentContainer : Fragment() {
     override fun onStart() {
         super.onStart()
         (activity as MainActivity).title = viewModel.getPreference(
-            Constants.APP_PREFERENCES_GROUP + "_" + viewModel.getCurrentUser()?.email.toString(),
+            Constants.APP_PREFERENCES_GROUP + "_" + viewModel.getUserEmail(),
             resources.getString(R.string.app_name)
         )
     }
@@ -62,7 +62,7 @@ class FragmentContainer : Fragment() {
     }
 
     private fun initObservers() {
-        viewModel.downloadState.observe(viewLifecycleOwner) { downloadStatus ->
+        viewModel.scheduleDownloadState.observe(viewLifecycleOwner) { downloadStatus ->
 
             when (downloadStatus) {
                 is DownloadStatus.Progress -> {
@@ -76,11 +76,11 @@ class FragmentContainer : Fragment() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                is DownloadStatus.SuccessGlobal -> {
+                is DownloadStatus.Success<FlatSchedule> -> {
                     binding.progressBar.visibility = View.GONE
                     setupViewPager2()
                 }
-                is DownloadStatus.SuccessLocal -> {
+                else -> {
                     throw IllegalStateException()
                 }
             }
