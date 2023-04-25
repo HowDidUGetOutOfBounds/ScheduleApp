@@ -63,15 +63,15 @@ class ScheduleFragmentViewModel @Inject constructor(
     }
 
     fun getScheduleByGroupAndDay(groupId: Int, dayId: Int, schedule: FlatSchedule): ArrayList<Schedule>? {
-        var resArray: ArrayList<Schedule> = arrayListOf()
+        val resArray: ArrayList<Schedule> = arrayListOf()
         for (i in 1..7) {
-            resArray.add(Schedule(pair = i, "", "", ""))
+            resArray.add(Schedule(lessonNum = i, "", "", ""))
         }
 
         var scheduleId: Int? = null
 
-        var firstScheduleArray = getById(dayId, schedule.scheduleDay)
-        var secondScheduleArray = getById(groupId, schedule.scheduleGroup)
+        val firstScheduleArray = getById(dayId, schedule.scheduleDay)
+        val secondScheduleArray = getById(groupId, schedule.scheduleGroup)
 
         if (firstScheduleArray == null || secondScheduleArray == null) {
             Log.d("TAG", "getScheduleByGroupAndDay: One of the schedule arrays is missing!")
@@ -114,9 +114,6 @@ class ScheduleFragmentViewModel @Inject constructor(
             }
         }
 
-        for (item in resArray) {
-
-        }
         return resArray
     }
     private fun getById(id: Int, array: ArrayList<Data_IntString>): Data_IntString? {
@@ -148,20 +145,22 @@ class ScheduleFragmentViewModel @Inject constructor(
 
 
 
-    fun getScheduleByGroupAndDayDetailed(groupId: Int, dayId: Int, schedule: FlatScheduleDetailed): ArrayList<ScheduleDetailed>? {
-        var result: ArrayList<ScheduleDetailed> = arrayListOf()
+    fun getScheduleByGroupAndDayDetailed(groupId: Int, dayId: Int, schedule: FlatScheduleDetailed): ArrayList<Schedule>? {
+        val resArray = arrayListOf<Schedule>()
+
+        val result: ArrayList<ScheduleDetailed> = arrayListOf()
         for (i in 1..14) {
             result.add(ScheduleDetailed(lessonNum = i, "", "", "", "", "", ""))
         }
 
         var scheduleId: Int? = null
 
-        var firstScheduleArray = getById(dayId, schedule.scheduleDay)
-        var secondScheduleArray = getById(groupId, schedule.scheduleGroup)
+        val firstScheduleArray = getById(dayId, schedule.scheduleDay)
+        val secondScheduleArray = getById(groupId, schedule.scheduleGroup)
 
         if (firstScheduleArray == null || secondScheduleArray == null) {
             Log.d("TAG", "getScheduleByGroupAndDay: One of the schedule arrays is missing!")
-            return result
+            return resArray
         }
 
         if (firstScheduleArray.scheduleId.size < secondScheduleArray.scheduleId.size) {
@@ -181,7 +180,7 @@ class ScheduleFragmentViewModel @Inject constructor(
         }
 
         if (scheduleId == null) {
-            return result
+            return resArray
         }
 
         for (item in schedule.cabinetLesson) {
@@ -215,8 +214,10 @@ class ScheduleFragmentViewModel @Inject constructor(
             }
         }
 
-
-        return result
+        for (i in 1..14) {
+            resArray.add(Schedule(lessonNum = i, result[i].discipline1+System.getProperty("line.separator")+result[i].discipline2, result[i].cabinet1+System.getProperty("line.separator")+result[i].cabinet2, result[i].teacher1+System.getProperty("line.separator")+result[i].teacher2))
+        }
+        return resArray
     }
 
     /*

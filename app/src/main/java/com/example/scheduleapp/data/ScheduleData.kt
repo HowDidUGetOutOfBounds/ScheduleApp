@@ -7,7 +7,7 @@ data class Date (
 )
 
 data class Schedule (
-    var pair       : Int?    = null,
+    var lessonNum       : Int?    = null,
     var discipline : String? = null,
     var cabinet    : String?    = null,
     var teacher    : String? = null
