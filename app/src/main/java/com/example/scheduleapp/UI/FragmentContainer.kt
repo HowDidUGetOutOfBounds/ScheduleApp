@@ -11,9 +11,8 @@ import androidx.fragment.app.activityViewModels
 import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.MainScreenAdapter
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
-import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
 import com.example.scheduleapp.data.DownloadStatus
-import com.example.scheduleapp.data.FlatSchedule
 import com.example.scheduleapp.data.FlatScheduleDetailed
 import com.example.scheduleapp.databinding.FragmentContainerBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
@@ -44,7 +43,7 @@ class FragmentContainer : Fragment() {
     override fun onStart() {
         super.onStart()
         (activity as MainActivity).title = viewModel.getPreference(
-            Constants.APP_PREFERENCES_GROUP + "_" + viewModel.getUserEmail(),
+            APP_PREFERENCES_GROUP + "_" + viewModel.getUserEmail(),
             resources.getString(R.string.app_name)
         )
     }

@@ -5,8 +5,14 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
+import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.utils.Utils.createUnsuccessfulTask
-import com.example.scheduleapp.data.*
+import com.example.scheduleapp.data.Constants.APP_BD_PATHS_GROUP_LIST
+import com.example.scheduleapp.data.Constants.APP_BD_PATHS_SCHEDULE_LIST
+import com.example.scheduleapp.data.Constants.APP_CALENDER_DAY_OF_WEEK
+import com.example.scheduleapp.data.Data_IntString
+import com.example.scheduleapp.data.DownloadStatus
+import com.example.scheduleapp.data.FlatScheduleDetailed
 import com.example.scheduleapp.models.FirebaseRepository
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
@@ -42,32 +48,8 @@ class MainActivityViewModel @Inject constructor(
         groupsDownloadState.value = DownloadStatus.Progress
         setTimeout(5000L)
 
-        listenerToRemove = OnCompleteListener<DataSnapshot> { task ->
-            if (task.isSuccessful) {
-                timer.cancel()
-                Log.d("TAG", "Successfully downloaded specific data from the database:")
-                Log.d("TAG", task.result.value.toString())
-
-                try {
-                    groupList = Gson().fromJson(
-                        task.result.value.toString(),
-                        object : TypeToken<ArrayList<Data_IntString>>() {}.type
-                    )
-                    groupsDownloadState.value = DownloadStatus.Success(groupList)
-
-                    Log.d("TAG", "Successfully read and converted specific data:")
-                    Log.d("TAG", groupList.toString())
-                } catch (e: Exception) {
-                    groupsDownloadState.value = DownloadStatus.Error(e.message.toString())
-                    Log.d("TAG", "Failed to convert specific data: ${e.message}")
-                }
-            } else {
-                groupsDownloadState.value = DownloadStatus.Error("Failed to download the data from the database.")
-                Log.d("TAG", "Failed to download specific data from the database.")
-            }
-        }
-
-        rImplementation.downloadDBReference(Constants.APP_BD_PATHS_GROUP_LIST)
+        listenerToRemove = getDownloadListener(true)
+        rImplementation.downloadByReference(APP_BD_PATHS_GROUP_LIST)
             .addOnCompleteListener(listenerToRemove)
     }
 
@@ -75,32 +57,51 @@ class MainActivityViewModel @Inject constructor(
         scheduleDownloadState.value = DownloadStatus.Progress
         setTimeout(5000L)
 
-        listenerToRemove = OnCompleteListener<DataSnapshot> { task ->
+        listenerToRemove = getDownloadListener(false)
+        rImplementation.downloadByReference(APP_BD_PATHS_SCHEDULE_LIST)
+            .addOnCompleteListener(listenerToRemove)
+    }
+
+    fun getDownloadListener(onlyGroups: Boolean): OnCompleteListener<DataSnapshot> {
+        val listener = OnCompleteListener<DataSnapshot> { task ->
             if (task.isSuccessful) {
                 timer.cancel()
-                Log.d("TAG", "Successfully downloaded the data from the database:")
+                Log.d("TAG", "Successfully downloaded data from the database:")
                 Log.d("TAG", task.result.value.toString())
 
                 try {
-                    flatSchedule = Gson().fromJson(
-                        task.result.value.toString(),
-                        GroupArray::class.java
-                    ).FlatScheduleDetailed!!
-                    scheduleDownloadState.value = DownloadStatus.Success(flatSchedule)
-
-                    Log.d("TAG", "Successfully read and converted the data:")
-                    Log.d("TAG", flatSchedule.toString())
+                    if (onlyGroups) {
+                        groupList = Gson().fromJson(
+                            task.result.value.toString(),
+                            object : TypeToken<ArrayList<Data_IntString>>() {}.type
+                        )
+                        groupsDownloadState.value = DownloadStatus.Success(groupList)
+                    } else {
+                        flatSchedule = Gson().fromJson(
+                            task.result.value.toString(),
+                            FlatScheduleDetailed::class.java
+                        )
+                        scheduleDownloadState.value = DownloadStatus.Success(flatSchedule)
+                    }
+                    Log.d("TAG", "Successfully read and converted the data.")
                 } catch (e: Exception) {
-                    scheduleDownloadState.value = DownloadStatus.Error(e.message.toString())
+                    if (onlyGroups) {
+                        groupsDownloadState.value = DownloadStatus.Error(e.message.toString())
+                    } else {
+                        scheduleDownloadState.value = DownloadStatus.Error(e.message.toString())
+                    }
                     Log.d("TAG", "Failed to convert the data: ${e.message}")
                 }
             } else {
-                scheduleDownloadState.value = DownloadStatus.Error("Connection or network error.")
-                Log.d("TAG", "Failed to download the data from the database.")
+                if (onlyGroups) {
+                    groupsDownloadState.value = DownloadStatus.Error("Connection or network error.")
+                } else {
+                    scheduleDownloadState.value = DownloadStatus.Error("Connection or network error.")
+                }
+                Log.d("TAG", "Failed to download data from the database.")
             }
         }
-        rImplementation.downloadDB()
-            .addOnCompleteListener(listenerToRemove)
+        return listener
     }
 
     private fun setTimeout(time: Long) {
@@ -137,7 +138,7 @@ class MainActivityViewModel @Inject constructor(
             c.add(Calendar.DATE, position)
         }
 
-        val weekDay = Constants.APP_CALENDER_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK) - 1]
+        val weekDay = APP_CALENDER_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK) - 1]
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         return "$weekDay${System.getProperty("line.separator")}$day"

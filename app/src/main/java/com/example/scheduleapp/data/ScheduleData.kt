@@ -12,3 +12,15 @@ data class Schedule (
     var cabinet    : String?    = null,
     var teacher    : String? = null
 )
+
+data class ScheduleDetailed (
+    var lessonNum  : Int?    = null,
+
+    var discipline1 : String? = null,
+    var cabinet1    : String?    = null,
+    var teacher1    : String? = null,
+
+    var discipline2 : String? = null,
+    var cabinet2    : String?    = null,
+    var teacher2    : String? = null,
+)

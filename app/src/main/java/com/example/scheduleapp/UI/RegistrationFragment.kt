@@ -16,7 +16,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.data.AuthenticationStatus
-import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Constants.APP_MIN_PASSWORD_LENGTH
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP_REGISTER
 import com.example.scheduleapp.data.Data_IntString
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
@@ -46,14 +48,14 @@ class RegistrationFragment : Fragment() {
             adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
-            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(Constants.APP_PREFERENCES_GROUP_REGISTER, "")) {
+            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(APP_PREFERENCES_GROUP_REGISTER, "")) {
                 binding.selectGroupSpinner.setSelection(i)
                 break
             }
         }
         binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.editPreferences(Constants.APP_PREFERENCES_GROUP_REGISTER, parent?.getItemAtPosition(position).toString())
+                viewModel.editPreferences(APP_PREFERENCES_GROUP_REGISTER, parent?.getItemAtPosition(position).toString())
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -82,8 +84,8 @@ class RegistrationFragment : Fragment() {
     }
 
     private fun signUp() {
-        if (binding.userPassword1.text.toString().count() < Constants.APP_MIN_PASSWORD_LENGTH) {
-            Toast.makeText(activity, "Your password should be at least ${Constants.APP_MIN_PASSWORD_LENGTH} characters long", Toast.LENGTH_SHORT).show()
+        if (binding.userPassword1.text.toString().count() < APP_MIN_PASSWORD_LENGTH) {
+            Toast.makeText(activity, "Your password should be at least $APP_MIN_PASSWORD_LENGTH characters long", Toast.LENGTH_SHORT).show()
         } else if (!binding.userPassword1.text.toString().equals(binding.userPassword2.text.toString())) {
             Toast.makeText(activity, "Your passwords don't match. Please confirm your password.", Toast.LENGTH_SHORT).show()
         } else {
@@ -100,8 +102,8 @@ class RegistrationFragment : Fragment() {
                     Toast.makeText(activity, "Registered successfully.", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", "Successful registration")
 
-                    viewModel.editPreferences(Constants.APP_PREFERENCES_GROUP + "_" + binding.userEmail.text.toString(), viewModel.getPreference(Constants.APP_PREFERENCES_GROUP_REGISTER, ""))
-                    viewModel.editPreferences(Constants.APP_PREFERENCES_GROUP_REGISTER, null)
+                    viewModel.editPreferences(APP_PREFERENCES_GROUP + "_" + binding.userEmail.text.toString(), viewModel.getPreference(APP_PREFERENCES_GROUP_REGISTER, ""))
+                    viewModel.editPreferences(APP_PREFERENCES_GROUP_REGISTER, null)
                     requireView().findNavController()
                         .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
                 }

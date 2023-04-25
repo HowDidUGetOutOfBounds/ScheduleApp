@@ -13,7 +13,8 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.data.AuthenticationStatus
-import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Constants.APP_MIN_PASSWORD_LENGTH
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
 import com.example.scheduleapp.data.Data_IntString
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.databinding.FragmentLoginBinding
@@ -60,7 +61,7 @@ class LoginFragment : Fragment() {
                     binding.progressBar.visibility = View.GONE
 
                     if (viewModel.isUserSingedIn()) {
-                        if (!viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)) {
+                        if (!viewModel.getPreference(APP_PREFERENCES_STAY, false)) {
                             viewModel.signOut()
                         } else {
                             requireView().findNavController()
@@ -116,7 +117,7 @@ class LoginFragment : Fragment() {
             if (viewModel.authState.value != AuthenticationStatus.Progress) {
                 binding.loginButton.isEnabled =
                     !(binding.userEmail.text.toString().isBlank() || binding.userPassword.text.toString().isBlank())
-                            && binding.userPassword.text.toString().count() >= Constants.APP_MIN_PASSWORD_LENGTH
+                            && binding.userPassword.text.toString().count() >= APP_MIN_PASSWORD_LENGTH
             }
         }
 

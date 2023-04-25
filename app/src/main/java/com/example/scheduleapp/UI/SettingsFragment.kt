@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
-import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_PUSHES
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
 import com.example.scheduleapp.data.Data_IntString
 import com.example.scheduleapp.databinding.FragmentSettingsBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
@@ -37,13 +39,13 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.enablePushesCheckBox.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_PUSHES, false)
-        binding.staySignedInCheckBox.isChecked = viewModel.getPreference(Constants.APP_PREFERENCES_STAY, false)
+        binding.enablePushesCheckBox.isChecked = viewModel.getPreference(APP_PREFERENCES_PUSHES, false)
+        binding.staySignedInCheckBox.isChecked = viewModel.getPreference(APP_PREFERENCES_STAY, false)
         binding.enablePushesCheckBox.setOnCheckedChangeListener(){v, checked ->
-            viewModel.editPreferences(Constants.APP_PREFERENCES_PUSHES, checked)
+            viewModel.editPreferences(APP_PREFERENCES_PUSHES, checked)
         }
         binding.staySignedInCheckBox.setOnCheckedChangeListener(){v, checked ->
-            viewModel.editPreferences(Constants.APP_PREFERENCES_STAY, checked)
+            viewModel.editPreferences(APP_PREFERENCES_STAY, checked)
         }
 
         binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, viewModel.getGroupNames()).also { adapter ->
@@ -70,7 +72,7 @@ class SettingsFragment : Fragment() {
 
     private fun logOut() {
         viewModel.signOut()
-        viewModel.editPreferences(Constants.APP_PREFERENCES_STAY, false)
+        viewModel.editPreferences(APP_PREFERENCES_STAY, false)
         (activity as MainActivity).title = resources.getString(R.string.app_name)
 
         requireView().findNavController()
@@ -78,7 +80,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun getGroupPreferencesId(): String {
-        return Constants.APP_PREFERENCES_GROUP+"_"+viewModel.getUserEmail()
+        return APP_PREFERENCES_GROUP+"_"+viewModel.getUserEmail()
     }
 
 }

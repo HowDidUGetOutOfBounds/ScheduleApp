@@ -12,11 +12,7 @@ class FirebaseImplementation(
     private val fDatabase: FirebaseDatabase,
     private val fAuth: FirebaseAuth
 ) : FirebaseRepository {
-    override fun downloadDB(): Task<DataSnapshot> {
-        return fDatabase.getReference("").get()
-    }
-
-    override fun downloadDBReference(reference: String): Task<DataSnapshot> {
+    override fun downloadByReference(reference: String): Task<DataSnapshot> {
         return fDatabase.getReference(reference).get()
     }
 

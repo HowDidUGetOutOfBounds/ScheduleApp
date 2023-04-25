@@ -63,85 +63,6 @@ class ScheduleFragmentViewModel @Inject constructor(
         return null
     }
 
-    fun getScheduleByGroupAndDay(
-        groupId: Int, dayId: Int, schedule: FlatSchedule
-    ): ArrayList<Schedule>? {
-        val resArray: ArrayList<Schedule> = arrayListOf()
-        for (i in 1..7) {
-            resArray.add(Schedule(lessonNum = i, "", "", ""))
-        }
-
-        var scheduleId: Int? = null
-
-        val firstScheduleArray = getById(dayId, schedule.scheduleDay)
-        val secondScheduleArray = getById(groupId, schedule.scheduleGroup)
-
-        if (firstScheduleArray == null || secondScheduleArray == null) {
-            Log.d("TAG", "getScheduleByGroupAndDay: One of the schedule arrays is missing!")
-            return null
-        }
-
-        if (firstScheduleArray.scheduleId.size < secondScheduleArray.scheduleId.size) {
-            for (item in firstScheduleArray.scheduleId) {
-                if (secondScheduleArray.scheduleId.contains(item)) {
-                    scheduleId = item
-                    break
-                }
-            }
-        } else {
-            for (item in secondScheduleArray.scheduleId) {
-                if (firstScheduleArray.scheduleId.contains(item)) {
-                    scheduleId = item
-                    break
-                }
-            }
-        }
-
-        if (scheduleId == null) {
-            return null
-        }
-
-        for (item in schedule.cabinetPair) {
-            if (item.scheduleId == scheduleId) {
-                resArray[item.pairNum!! - 1].cabinet =
-                    getById(item.specialId!!, schedule.cabinetList)!!.title
-            }
-        }
-        for (item in schedule.schedulePair) {
-            if (item.scheduleId == scheduleId) {
-                resArray[item.pairNum!! - 1].discipline =
-                    getById(item.specialId!!, schedule.pairList)!!.title
-            }
-        }
-        for (item in schedule.teacherPair) {
-            if (item.scheduleId == scheduleId) {
-                resArray[item.pairNum!! - 1].teacher =
-                    getById(item.specialId!!, schedule.teacherList)!!.title
-            }
-        }
-
-        return resArray
-    }
-
-    private fun getById(id: Int, array: ArrayList<Data_IntString>): Data_IntString? {
-        for (item in array) {
-            if (item.id == id) {
-                return item
-            }
-        }
-        return null
-    }
-
-    private fun getById(id: Int, array: ArrayList<Data_IntArrayofInt>): Data_IntArrayofInt? {
-        for (item in array) {
-            if (item.specialId == id) {
-                return item
-            }
-        }
-        return null
-    }
-
-
     fun getScheduleByGroupAndDayDetailed(
         groupId: Int, dayId: Int, schedule: FlatScheduleDetailed
     ): ArrayList<Schedule>? {
@@ -220,7 +141,7 @@ class ScheduleFragmentViewModel @Inject constructor(
         }
 
         for (i in 0 until 14) {
-            val scheduleObject = equalChecker(result[i])
+            val scheduleObject = checkForEquality(result[i])
             resArray.add(
                 scheduleObject
             )
@@ -228,8 +149,8 @@ class ScheduleFragmentViewModel @Inject constructor(
         return resArray
     }
 
-    fun equalChecker(scheduleDetailed: ScheduleDetailed): Schedule {
-        var scheduleObject = Schedule()
+    fun checkForEquality(scheduleDetailed: ScheduleDetailed): Schedule {
+        val scheduleObject = Schedule()
 
         scheduleObject.lessonNum = scheduleDetailed.lessonNum
 
@@ -257,19 +178,22 @@ class ScheduleFragmentViewModel @Inject constructor(
         return scheduleObject
     }
 
-    /*
-    fun checkDate(position: Int, currentGroup: Group): Day? {
-        val currentDate = getDayWithOffset(position)
-        Log.d("TAGSchedule", "Current position: ${position}")
-        Log.d("TAGSchedule", "Current Schedule ${currentGroup}")
-        Log.d("TAGSchedule", "Current date: $currentDate")
-        for (item in currentGroup.schedule) {
-            Log.d("TAGSchedule", "Database date ${item.date} ")
-            if (currentDate == item.date) {
+
+    private fun getById(id: Int, array: ArrayList<Data_IntString>): Data_IntString? {
+        for (item in array) {
+            if (item.id == id) {
                 return item
             }
         }
         return null
     }
-    */
+
+    private fun getById(id: Int, array: ArrayList<Data_IntArrayofInt>): Data_IntArrayofInt? {
+        for (item in array) {
+            if (item.specialId == id) {
+                return item
+            }
+        }
+        return null
+    }
 }
