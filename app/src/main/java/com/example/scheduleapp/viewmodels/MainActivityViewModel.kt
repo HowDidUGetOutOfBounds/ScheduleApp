@@ -34,6 +34,8 @@ class MainActivityViewModel @Inject constructor(
     private lateinit var timer: Timer
     private lateinit var listenerToRemove: OnCompleteListener<DataSnapshot>
 
+    lateinit var testSchedule: FlatScheduleDetailed
+
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
     }
@@ -82,6 +84,11 @@ class MainActivityViewModel @Inject constructor(
                 Log.d("TAG", task.result.value.toString())
 
                 try {
+                    testSchedule = Gson().fromJson(
+                        task.result.value.toString(),
+                        GroupArray::class.java
+                    ).FlatScheduleDetailed!!
+
                     flatSchedule = Gson().fromJson(
                         task.result.value.toString(),
                         GroupArray::class.java

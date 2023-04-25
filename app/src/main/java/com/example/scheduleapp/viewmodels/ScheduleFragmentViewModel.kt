@@ -132,6 +132,87 @@ class ScheduleFragmentViewModel @Inject constructor(
         return null
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+    fun getScheduleByGroupAndDayDetailed(groupId: Int, dayId: Int, schedule: FlatScheduleDetailed): ArrayList<ArrayList<ScheduleDetailed>>? {
+        var result: java.util.ArrayList<ArrayList<ScheduleDetailed>> = arrayListOf()
+        for (i in 1..14) {
+            result.add(arrayListOf(ScheduleDetailed(lessonNum = i, "", "", "", subGroup = 1), ScheduleDetailed(lessonNum = i, "", "", "", subGroup = 2)))
+        }
+
+        var scheduleId: Int? = null
+
+        var firstScheduleArray = getById(dayId, schedule.scheduleDay)
+        var secondScheduleArray = getById(groupId, schedule.scheduleGroup)
+
+        if (firstScheduleArray == null || secondScheduleArray == null) {
+            Log.d("TAG", "getScheduleByGroupAndDay: One of the schedule arrays is missing!")
+            return result
+        }
+
+        if (firstScheduleArray.scheduleId.size < secondScheduleArray.scheduleId.size) {
+            for (item in firstScheduleArray.scheduleId) {
+                if (secondScheduleArray.scheduleId.contains(item)) {
+                    scheduleId = item
+                    break
+                }
+            }
+        } else {
+            for (item in secondScheduleArray.scheduleId) {
+                if (firstScheduleArray.scheduleId.contains(item)) {
+                    scheduleId = item
+                    break
+                }
+            }
+        }
+
+        if (scheduleId == null) {
+            return result
+        }
+
+        for (item in schedule.cabinetLesson) {
+            if (item.scheduleId == scheduleId) {
+                if (item.subGroups.contains(1)) {
+                    result[(item.lessonNum!!-1)][0].cabinet = getById(item.specialId!!, schedule.cabinetList)!!.title
+                }
+                if (item.subGroups.contains(2)) {
+                    result[(item.lessonNum!!-1)][1].cabinet = getById(item.specialId!!, schedule.cabinetList)!!.title
+                }
+            }
+        }
+        for (item in schedule.scheduleLesson) {
+            if (item.scheduleId == scheduleId) {
+                if (item.subGroups.contains(1)) {
+                    result[item.lessonNum!!-1][0].discipline = getById(item.specialId!!, schedule.lessonList)!!.title
+                }
+                if (item.subGroups.contains(2)) {
+                    result[item.lessonNum!!-1][1].discipline = getById(item.specialId!!, schedule.lessonList)!!.title
+                }
+            }
+        }
+        for (item in schedule.teacherLesson) {
+            if (item.scheduleId == scheduleId) {
+                if (item.subGroups.contains(1)) {
+                    result[item.lessonNum!!-1][0].teacher = getById(item.specialId!!, schedule.teacherList)!!.title
+                }
+                if (item.subGroups.contains(2)) {
+                    result[item.lessonNum!!-1][1].teacher = getById(item.specialId!!, schedule.teacherList)!!.title
+                }
+            }
+        }
+        return result
+    }
+
     /*
     fun checkDate(position: Int, currentGroup: Group): Day? {
         val currentDate = getDayWithOffset(position)

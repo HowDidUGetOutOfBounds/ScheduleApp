@@ -1,6 +1,7 @@
 package com.example.scheduleapp.UI
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,6 +79,7 @@ class FragmentContainer : Fragment() {
                 }
                 is DownloadStatus.Success<FlatSchedule> -> {
                     binding.progressBar.visibility = View.GONE
+                    Log.d("TAG_BFS", viewModel.testSchedule.toString())
                     setupViewPager2()
                 }
                 else -> {
