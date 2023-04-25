@@ -70,6 +70,7 @@ class FragmentContainer : Fragment() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is DownloadStatus.Error -> {
+                    viewModel.resetDownloadState(false)
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(
                         activity,
@@ -78,6 +79,7 @@ class FragmentContainer : Fragment() {
                     ).show()
                 }
                 is DownloadStatus.Success<FlatScheduleDetailed> -> {
+                    viewModel.resetDownloadState(false)
                     binding.progressBar.visibility = View.GONE
                     setupViewPager2()
                 }

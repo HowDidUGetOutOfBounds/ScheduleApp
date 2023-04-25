@@ -51,6 +51,7 @@ class LoginFragment : Fragment() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is DownloadStatus.Error -> {
+                    viewModel.resetDownloadState(true)
                     Toast.makeText(
                         activity,
                         "Failed to download data from DB: ${downloadStatus.message}",
@@ -58,6 +59,7 @@ class LoginFragment : Fragment() {
                     ).show()
                 }
                 is DownloadStatus.Success<ArrayList<Data_IntString>> -> {
+                    viewModel.resetDownloadState(true)
                     binding.progressBar.visibility = View.GONE
 
                     if (viewModel.isUserSingedIn()) {
@@ -82,6 +84,7 @@ class LoginFragment : Fragment() {
         viewModel.authState.observe(viewLifecycleOwner) {authStatus->
             when (authStatus) {
                 is AuthenticationStatus.Success -> {
+                    viewModel.resetAuthState()
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(activity, "Logged in successfully", Toast.LENGTH_SHORT).show()
@@ -90,6 +93,7 @@ class LoginFragment : Fragment() {
                         .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
                 }
                 is AuthenticationStatus.Error -> {
+                    viewModel.resetAuthState()
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(activity, "Failed to log in: ${authStatus.message}", Toast.LENGTH_LONG).show()

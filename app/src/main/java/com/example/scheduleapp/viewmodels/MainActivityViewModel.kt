@@ -44,6 +44,18 @@ class MainActivityViewModel @Inject constructor(
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
     }
 
+    fun resetAuthState() {
+        authState = MutableLiveData()
+    }
+
+    fun resetDownloadState(onlyGroups: Boolean) {
+        if (onlyGroups) {
+            groupsDownloadState = MutableLiveData()
+        } else {
+            scheduleDownloadState = MutableLiveData()
+        }
+    }
+
     fun downloadGroupList() {
         groupsDownloadState.value = DownloadStatus.Progress
         setTimeout(5000L)
@@ -170,7 +182,6 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun signOut() {
-        authState = MutableLiveData()
         rImplementation.signOut()
     }
 

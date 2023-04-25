@@ -97,6 +97,7 @@ class RegistrationFragment : Fragment() {
         viewModel.authState.observe(viewLifecycleOwner) {authStatus->
             when (authStatus) {
                 is AuthenticationStatus.Success -> {
+                    viewModel.resetAuthState()
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(activity, "Registered successfully.", Toast.LENGTH_SHORT).show()
@@ -108,13 +109,14 @@ class RegistrationFragment : Fragment() {
                         .navigate(RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment())
                 }
                 is AuthenticationStatus.Error -> {
+                    viewModel.resetAuthState()
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(activity, "Failed to sign up: ${authStatus.message}", Toast.LENGTH_LONG).show()
                     Log.d("TAG", authStatus.message)
                 }
                 is AuthenticationStatus.Progress -> {
-                    binding.loginButton.isEnabled = false
+                    binding.registerButton.isEnabled = false
                     binding.progressBar.visibility = View.VISIBLE
                 }
             }

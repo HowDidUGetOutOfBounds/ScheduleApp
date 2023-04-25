@@ -32,7 +32,7 @@
         android:id="@+id/resetButton"
         style="@style/Button"
         android:enabled="false"
-        android:text="Отправить пароль на мой Email"
+        android:text="Отправить сообщение сброса на Email"
         android:layout_marginTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
