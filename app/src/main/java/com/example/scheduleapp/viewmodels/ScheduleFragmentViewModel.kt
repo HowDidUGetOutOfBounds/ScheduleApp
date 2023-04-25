@@ -35,7 +35,8 @@ class ScheduleFragmentViewModel @Inject constructor(
             return null
         }
         val groupName = sPreferences.getString(
-            Constants.APP_PREFERENCES_GROUP + "_" + rImplementation.getCurrentUser()!!.email.toString(), null
+            Constants.APP_PREFERENCES_GROUP + "_" + rImplementation.getCurrentUser()!!.email.toString(),
+            null
         )
         return groupName
     }
@@ -62,7 +63,9 @@ class ScheduleFragmentViewModel @Inject constructor(
         return null
     }
 
-    fun getScheduleByGroupAndDay(groupId: Int, dayId: Int, schedule: FlatSchedule): ArrayList<Schedule>? {
+    fun getScheduleByGroupAndDay(
+        groupId: Int, dayId: Int, schedule: FlatSchedule
+    ): ArrayList<Schedule>? {
         val resArray: ArrayList<Schedule> = arrayListOf()
         for (i in 1..7) {
             resArray.add(Schedule(lessonNum = i, "", "", ""))
@@ -100,22 +103,26 @@ class ScheduleFragmentViewModel @Inject constructor(
 
         for (item in schedule.cabinetPair) {
             if (item.scheduleId == scheduleId) {
-                resArray[item.pairNum!!-1].cabinet = getById(item.specialId!!, schedule.cabinetList)!!.title
+                resArray[item.pairNum!! - 1].cabinet =
+                    getById(item.specialId!!, schedule.cabinetList)!!.title
             }
         }
         for (item in schedule.schedulePair) {
             if (item.scheduleId == scheduleId) {
-                resArray[item.pairNum!!-1].discipline = getById(item.specialId!!, schedule.pairList)!!.title
+                resArray[item.pairNum!! - 1].discipline =
+                    getById(item.specialId!!, schedule.pairList)!!.title
             }
         }
         for (item in schedule.teacherPair) {
             if (item.scheduleId == scheduleId) {
-                resArray[item.pairNum!!-1].teacher = getById(item.specialId!!, schedule.teacherList)!!.title
+                resArray[item.pairNum!! - 1].teacher =
+                    getById(item.specialId!!, schedule.teacherList)!!.title
             }
         }
 
         return resArray
     }
+
     private fun getById(id: Int, array: ArrayList<Data_IntString>): Data_IntString? {
         for (item in array) {
             if (item.id == id) {
@@ -124,6 +131,7 @@ class ScheduleFragmentViewModel @Inject constructor(
         }
         return null
     }
+
     private fun getById(id: Int, array: ArrayList<Data_IntArrayofInt>): Data_IntArrayofInt? {
         for (item in array) {
             if (item.specialId == id) {
@@ -134,23 +142,14 @@ class ScheduleFragmentViewModel @Inject constructor(
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-    fun getScheduleByGroupAndDayDetailed(groupId: Int, dayId: Int, schedule: FlatScheduleDetailed): ArrayList<Schedule>? {
+    fun getScheduleByGroupAndDayDetailed(
+        groupId: Int, dayId: Int, schedule: FlatScheduleDetailed
+    ): ArrayList<Schedule>? {
         val resArray = arrayListOf<Schedule>()
 
         val result: ArrayList<ScheduleDetailed> = arrayListOf()
         for (i in 1..14) {
-            result.add(ScheduleDetailed(lessonNum = i, "", "", "", "", "", ""))
+            result.add(ScheduleDetailed(lessonNum = i, "-", "-", "-", "-", "-", "-"))
         }
 
         var scheduleId: Int? = null
@@ -186,38 +185,76 @@ class ScheduleFragmentViewModel @Inject constructor(
         for (item in schedule.cabinetLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[(item.lessonNum!!-1)].cabinet1 = getById(item.specialId!!, schedule.cabinetList)!!.title
+                    result[(item.lessonNum!! - 1)].cabinet1 =
+                        getById(item.specialId!!, schedule.cabinetList)!!.title
                 }
                 if (item.subGroups.contains(2)) {
-                    result[(item.lessonNum!!-1)].cabinet2 = getById(item.specialId!!, schedule.cabinetList)!!.title
+                    result[(item.lessonNum!! - 1)].cabinet2 =
+                        getById(item.specialId!!, schedule.cabinetList)!!.title
                 }
             }
         }
         for (item in schedule.scheduleLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[item.lessonNum!!-1].discipline1 = getById(item.specialId!!, schedule.lessonList)!!.title
+                    result[item.lessonNum!! - 1].discipline1 =
+                        getById(item.specialId!!, schedule.lessonList)!!.title
                 }
                 if (item.subGroups.contains(2)) {
-                    result[item.lessonNum!!-1].discipline2 = getById(item.specialId!!, schedule.lessonList)!!.title
+                    result[item.lessonNum!! - 1].discipline2 =
+                        getById(item.specialId!!, schedule.lessonList)!!.title
                 }
             }
         }
         for (item in schedule.teacherLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[item.lessonNum!!-1].teacher1 = getById(item.specialId!!, schedule.teacherList)!!.title
+                    result[item.lessonNum!! - 1].teacher1 =
+                        getById(item.specialId!!, schedule.teacherList)!!.title
                 }
                 if (item.subGroups.contains(2)) {
-                    result[item.lessonNum!!-1].teacher2 = getById(item.specialId!!, schedule.teacherList)!!.title
+                    result[item.lessonNum!! - 1].teacher2 =
+                        getById(item.specialId!!, schedule.teacherList)!!.title
                 }
             }
         }
 
-        for (i in 1..14) {
-            resArray.add(Schedule(lessonNum = i, result[i].discipline1+System.getProperty("line.separator")+result[i].discipline2, result[i].cabinet1+System.getProperty("line.separator")+result[i].cabinet2, result[i].teacher1+System.getProperty("line.separator")+result[i].teacher2))
+        for (i in 0 until 14) {
+            val scheduleObject = equalChecker(result[i])
+            resArray.add(
+                scheduleObject
+            )
         }
         return resArray
+    }
+
+    fun equalChecker(scheduleDetailed: ScheduleDetailed): Schedule {
+        var scheduleObject = Schedule()
+
+        scheduleObject.lessonNum = scheduleDetailed.lessonNum
+
+        if (scheduleDetailed.discipline1 == scheduleDetailed.discipline2) {
+            scheduleObject.discipline = scheduleDetailed.discipline1
+        } else {
+            scheduleObject.discipline =
+                scheduleDetailed.discipline1 + System.getProperty("line.separator") + scheduleDetailed.discipline2
+        }
+
+        if (scheduleDetailed.cabinet1 == scheduleDetailed.cabinet2) {
+            scheduleObject.cabinet = scheduleDetailed.cabinet1
+        } else {
+            scheduleObject.cabinet =
+                scheduleDetailed.cabinet1 + System.getProperty("line.separator") + scheduleDetailed.cabinet2
+        }
+
+        if (scheduleDetailed.teacher1 == scheduleDetailed.teacher2) {
+            scheduleObject.teacher = scheduleDetailed.teacher1
+        } else {
+            scheduleObject.teacher =
+                scheduleDetailed.teacher1 + System.getProperty("line.separator") + scheduleDetailed.teacher2
+        }
+
+        return scheduleObject
     }
 
     /*
