@@ -3,7 +3,7 @@ package com.example.scheduleapp.data
 
 data class GroupArray (
     //var GroupList : ArrayList<Group> = arrayListOf(),
-    var FlatSchedule : FlatSchedule? = FlatSchedule(),
+    //var FlatSchedule : FlatSchedule? = FlatSchedule(),
     var FlatScheduleDetailed : FlatScheduleDetailed? = FlatScheduleDetailed()
 )
 

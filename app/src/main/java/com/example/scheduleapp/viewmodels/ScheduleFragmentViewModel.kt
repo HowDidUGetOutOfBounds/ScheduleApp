@@ -63,9 +63,9 @@ class ScheduleFragmentViewModel @Inject constructor(
     }
 
     fun getScheduleByGroupAndDay(groupId: Int, dayId: Int, schedule: FlatSchedule): ArrayList<Schedule>? {
-        var result: ArrayList<Schedule> = arrayListOf()
+        var resArray: ArrayList<Schedule> = arrayListOf()
         for (i in 1..7) {
-            result.add(Schedule(pair = i, "", "", ""))
+            resArray.add(Schedule(pair = i, "", "", ""))
         }
 
         var scheduleId: Int? = null
@@ -100,20 +100,24 @@ class ScheduleFragmentViewModel @Inject constructor(
 
         for (item in schedule.cabinetPair) {
             if (item.scheduleId == scheduleId) {
-                result[item.pairNum!!-1].cabinet = getById(item.specialId!!, schedule.cabinetList)!!.title
+                resArray[item.pairNum!!-1].cabinet = getById(item.specialId!!, schedule.cabinetList)!!.title
             }
         }
         for (item in schedule.schedulePair) {
             if (item.scheduleId == scheduleId) {
-                result[item.pairNum!!-1].discipline = getById(item.specialId!!, schedule.pairList)!!.title
+                resArray[item.pairNum!!-1].discipline = getById(item.specialId!!, schedule.pairList)!!.title
             }
         }
         for (item in schedule.teacherPair) {
             if (item.scheduleId == scheduleId) {
-                result[item.pairNum!!-1].teacher = getById(item.specialId!!, schedule.teacherList)!!.title
+                resArray[item.pairNum!!-1].teacher = getById(item.specialId!!, schedule.teacherList)!!.title
             }
         }
-        return result
+
+        for (item in resArray) {
+
+        }
+        return resArray
     }
     private fun getById(id: Int, array: ArrayList<Data_IntString>): Data_IntString? {
         for (item in array) {
@@ -144,10 +148,10 @@ class ScheduleFragmentViewModel @Inject constructor(
 
 
 
-    fun getScheduleByGroupAndDayDetailed(groupId: Int, dayId: Int, schedule: FlatScheduleDetailed): ArrayList<ArrayList<ScheduleDetailed>>? {
-        var result: java.util.ArrayList<ArrayList<ScheduleDetailed>> = arrayListOf()
+    fun getScheduleByGroupAndDayDetailed(groupId: Int, dayId: Int, schedule: FlatScheduleDetailed): ArrayList<ScheduleDetailed>? {
+        var result: ArrayList<ScheduleDetailed> = arrayListOf()
         for (i in 1..14) {
-            result.add(arrayListOf(ScheduleDetailed(lessonNum = i, "", "", "", subGroup = 1), ScheduleDetailed(lessonNum = i, "", "", "", subGroup = 2)))
+            result.add(ScheduleDetailed(lessonNum = i, "", "", "", "", "", ""))
         }
 
         var scheduleId: Int? = null
@@ -183,33 +187,35 @@ class ScheduleFragmentViewModel @Inject constructor(
         for (item in schedule.cabinetLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[(item.lessonNum!!-1)][0].cabinet = getById(item.specialId!!, schedule.cabinetList)!!.title
+                    result[(item.lessonNum!!-1)].cabinet1 = getById(item.specialId!!, schedule.cabinetList)!!.title
                 }
                 if (item.subGroups.contains(2)) {
-                    result[(item.lessonNum!!-1)][1].cabinet = getById(item.specialId!!, schedule.cabinetList)!!.title
+                    result[(item.lessonNum!!-1)].cabinet2 = getById(item.specialId!!, schedule.cabinetList)!!.title
                 }
             }
         }
         for (item in schedule.scheduleLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[item.lessonNum!!-1][0].discipline = getById(item.specialId!!, schedule.lessonList)!!.title
+                    result[item.lessonNum!!-1].discipline1 = getById(item.specialId!!, schedule.lessonList)!!.title
                 }
                 if (item.subGroups.contains(2)) {
-                    result[item.lessonNum!!-1][1].discipline = getById(item.specialId!!, schedule.lessonList)!!.title
+                    result[item.lessonNum!!-1].discipline2 = getById(item.specialId!!, schedule.lessonList)!!.title
                 }
             }
         }
         for (item in schedule.teacherLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[item.lessonNum!!-1][0].teacher = getById(item.specialId!!, schedule.teacherList)!!.title
+                    result[item.lessonNum!!-1].teacher1 = getById(item.specialId!!, schedule.teacherList)!!.title
                 }
                 if (item.subGroups.contains(2)) {
-                    result[item.lessonNum!!-1][1].teacher = getById(item.specialId!!, schedule.teacherList)!!.title
+                    result[item.lessonNum!!-1].teacher2 = getById(item.specialId!!, schedule.teacherList)!!.title
                 }
             }
         }
+
+
         return result
     }
 

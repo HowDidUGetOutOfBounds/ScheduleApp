@@ -14,6 +14,7 @@ import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.data.Constants
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.data.FlatSchedule
+import com.example.scheduleapp.data.FlatScheduleDetailed
 import com.example.scheduleapp.databinding.FragmentContainerBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
@@ -77,9 +78,8 @@ class FragmentContainer : Fragment() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                is DownloadStatus.Success<FlatSchedule> -> {
+                is DownloadStatus.Success<FlatScheduleDetailed> -> {
                     binding.progressBar.visibility = View.GONE
-                    Log.d("TAG_BFS", viewModel.testSchedule.toString())
                     setupViewPager2()
                 }
                 else -> {

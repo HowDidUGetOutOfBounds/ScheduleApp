@@ -26,15 +26,13 @@ class MainActivityViewModel @Inject constructor(
 ) : ViewModel() {
     var authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
     var groupsDownloadState: MutableLiveData<DownloadStatus<ArrayList<Data_IntString>>> = MutableLiveData()
-    var scheduleDownloadState: MutableLiveData<DownloadStatus<FlatSchedule>> = MutableLiveData()
+    var scheduleDownloadState: MutableLiveData<DownloadStatus<FlatScheduleDetailed>> = MutableLiveData()
 
     private var groupList = arrayListOf<Data_IntString>()
-    private var flatSchedule = FlatSchedule()
+    private var flatSchedule = FlatScheduleDetailed()
 
     private lateinit var timer: Timer
     private lateinit var listenerToRemove: OnCompleteListener<DataSnapshot>
-
-    lateinit var testSchedule: FlatScheduleDetailed
 
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
@@ -84,15 +82,10 @@ class MainActivityViewModel @Inject constructor(
                 Log.d("TAG", task.result.value.toString())
 
                 try {
-                    testSchedule = Gson().fromJson(
-                        task.result.value.toString(),
-                        GroupArray::class.java
-                    ).FlatScheduleDetailed!!
-
                     flatSchedule = Gson().fromJson(
                         task.result.value.toString(),
                         GroupArray::class.java
-                    ).FlatSchedule!!
+                    ).FlatScheduleDetailed!!
                     scheduleDownloadState.value = DownloadStatus.Success(flatSchedule)
 
                     Log.d("TAG", "Successfully read and converted the data:")
@@ -124,7 +117,7 @@ class MainActivityViewModel @Inject constructor(
         timer.schedule(timerTask, time)
     }
 
-    fun getSchedule(): FlatSchedule {
+    fun getSchedule(): FlatScheduleDetailed {
         return flatSchedule
     }
 
