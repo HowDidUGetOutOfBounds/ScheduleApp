@@ -51,7 +51,7 @@ class LoginFragment : Fragment() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is DownloadStatus.Error -> {
-                    viewModel.resetDownloadState(true)
+                    //viewModel.resetDownloadState(true)
                     Toast.makeText(
                         activity,
                         "Failed to download data from DB: ${downloadStatus.message}",
@@ -59,7 +59,7 @@ class LoginFragment : Fragment() {
                     ).show()
                 }
                 is DownloadStatus.Success<ArrayList<Data_IntString>> -> {
-                    viewModel.resetDownloadState(true)
+                    //viewModel.resetDownloadState(true)
                     binding.progressBar.visibility = View.GONE
 
                     if (viewModel.isUserSingedIn()) {
