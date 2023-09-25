@@ -36,8 +36,8 @@ class FragmentContainer : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.downloadSchedule()
         initObservers()
+        viewModel.downloadSchedule()
     }
 
     override fun onStart() {
@@ -63,14 +63,21 @@ class FragmentContainer : Fragment() {
     }
 
     private fun initObservers() {
+        viewModel.resetDownloadState(false)
         viewModel.scheduleDownloadState.observe(viewLifecycleOwner) { downloadStatus ->
 
             when (downloadStatus) {
                 is DownloadStatus.Progress -> {
                     binding.progressBar.visibility = View.VISIBLE
                 }
+                is DownloadStatus.WeakProgress -> {
+                    Toast.makeText(
+                        activity,
+                        downloadStatus.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
                 is DownloadStatus.Error -> {
-                    //viewModel.resetDownloadState(false)
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(
                         activity,
@@ -79,7 +86,6 @@ class FragmentContainer : Fragment() {
                     ).show()
                 }
                 is DownloadStatus.Success<FlatScheduleDetailed> -> {
-                    //viewModel.resetDownloadState(false)
                     binding.progressBar.visibility = View.GONE
                     setupViewPager2()
                 }

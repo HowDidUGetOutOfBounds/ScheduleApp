@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.data.AuthenticationStatus
-import com.example.scheduleapp.utils.Utils.createUnsuccessfulTask
 import com.example.scheduleapp.data.Constants.APP_BD_PATHS_GROUP_LIST
 import com.example.scheduleapp.data.Constants.APP_BD_PATHS_SCHEDULE_LIST
 import com.example.scheduleapp.data.Constants.APP_CALENDER_DAY_OF_WEEK
@@ -58,7 +57,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun downloadGroupList() {
         groupsDownloadState.value = DownloadStatus.Progress
-        setTimeout(5000L)
+        setTimeout(5000L, true)
 
         listenerToRemove = getDownloadListener(true)
         rImplementation.downloadByReference(APP_BD_PATHS_GROUP_LIST)
@@ -67,7 +66,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun downloadSchedule() {
         scheduleDownloadState.value = DownloadStatus.Progress
-        setTimeout(5000L)
+        setTimeout(8000L, false)
 
         listenerToRemove = getDownloadListener(false)
         rImplementation.downloadByReference(APP_BD_PATHS_SCHEDULE_LIST)
@@ -116,14 +115,16 @@ class MainActivityViewModel @Inject constructor(
         return listener
     }
 
-    private fun setTimeout(time: Long) {
+    private fun setTimeout(time: Long, onlyGroups: Boolean) {
         timer = Timer()
         val timerTask = object : TimerTask() {
             override fun run() {
                 MainScope().launch {
-                    listenerToRemove.onComplete(
-                        createUnsuccessfulTask()
-                    )
+                    if (onlyGroups) {
+                        groupsDownloadState.value = DownloadStatus.WeakProgress("Looks like there are some problems with connection...")
+                    } else {
+                        scheduleDownloadState.value = DownloadStatus.WeakProgress("Looks like there are some problems with connection...")
+                    }
                 }
             }
         }

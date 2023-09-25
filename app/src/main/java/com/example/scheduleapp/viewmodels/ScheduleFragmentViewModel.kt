@@ -106,36 +106,48 @@ class ScheduleFragmentViewModel @Inject constructor(
         for (item in schedule.cabinetLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[(item.lessonNum!! - 1)].cabinet1 =
-                        getById(item.specialId!!, schedule.cabinetList)!!.title
+                    for (subPair in item.subPairs) {
+                        result[(item.pairNum!! - 1) * 2 + (subPair - 1)].cabinet1 =
+                            getById(item.specialId!!, schedule.cabinetList)!!.title
+                    }
                 }
                 if (item.subGroups.contains(2)) {
-                    result[(item.lessonNum!! - 1)].cabinet2 =
-                        getById(item.specialId!!, schedule.cabinetList)!!.title
+                    for (subPair in item.subPairs) {
+                        result[(item.pairNum!! - 1) * 2 + (subPair - 1)].cabinet2 =
+                            getById(item.specialId!!, schedule.cabinetList)!!.title
+                    }
                 }
             }
         }
         for (item in schedule.scheduleLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[item.lessonNum!! - 1].discipline1 =
-                        getById(item.specialId!!, schedule.lessonList)!!.title
+                    for (subPair in item.subPairs) {
+                        result[(item.pairNum!! - 1) * 2 + (subPair - 1)].discipline1 =
+                            getById(item.specialId!!, schedule.lessonList)!!.title
+                    }
                 }
                 if (item.subGroups.contains(2)) {
-                    result[item.lessonNum!! - 1].discipline2 =
-                        getById(item.specialId!!, schedule.lessonList)!!.title
+                    for (subPair in item.subPairs) {
+                        result[(item.pairNum!! - 1) * 2 + (subPair - 1)].discipline2 =
+                            getById(item.specialId!!, schedule.lessonList)!!.title
+                    }
                 }
             }
         }
         for (item in schedule.teacherLesson) {
             if (item.scheduleId == scheduleId) {
                 if (item.subGroups.contains(1)) {
-                    result[item.lessonNum!! - 1].teacher1 =
-                        getById(item.specialId!!, schedule.teacherList)!!.title
+                    for (subPair in item.subPairs) {
+                        result[(item.pairNum!! - 1) * 2 + (subPair - 1)].teacher1 =
+                            getById(item.specialId!!, schedule.teacherList)!!.title
+                    }
                 }
                 if (item.subGroups.contains(2)) {
-                    result[item.lessonNum!! - 1].teacher2 =
-                        getById(item.specialId!!, schedule.teacherList)!!.title
+                    for (subPair in item.subPairs) {
+                        result[(item.pairNum!! - 1) * 2 + (subPair - 1)].teacher2 =
+                            getById(item.specialId!!, schedule.teacherList)!!.title
+                    }
                 }
             }
         }
@@ -188,7 +200,7 @@ class ScheduleFragmentViewModel @Inject constructor(
         return null
     }
 
-    private fun getById(id: Int, array: ArrayList<Data_IntArrayofInt>): Data_IntArrayofInt? {
+    private fun getById(id: Int, array: ArrayList<Data_IntArray>): Data_IntArray? {
         for (item in array) {
             if (item.specialId == id) {
                 return item

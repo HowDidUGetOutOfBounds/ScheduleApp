@@ -52,22 +52,20 @@ class ResetFragment : Fragment() {
         binding.resetButton.setOnClickListener {
             viewModel.sendResetMessage(binding.userEmail.text.toString())
         }
-
         initObservers()
     }
 
     private fun initObservers() {
+        viewModel.resetAuthState()
         viewModel.authState.observe(viewLifecycleOwner) {authStatus->
             when (authStatus) {
                 is AuthenticationStatus.Success -> {
-                    viewModel.resetAuthState()
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(activity, "Reset message sent successfully.", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", "Successful send")
                 }
                 is AuthenticationStatus.Error -> {
-                    viewModel.resetAuthState()
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(activity, "Failed to send the reset message: ${authStatus.message}", Toast.LENGTH_LONG).show()

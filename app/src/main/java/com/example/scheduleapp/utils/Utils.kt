@@ -28,9 +28,11 @@ object Utils {
 
     /**
      * As firebase doesn't give us error on timeout and just keeps retrying,
-     * we just generate our own Unsuccessful Event.
-     * Note that no other function is called except for isSuccessful()
-     */
+     * in the earlier versions of the app we would just generate our own Unsuccessful Event.
+     * Note that no other function is called except for isSuccessful().
+     * However, this method, of course, wasn't exactly architecturally correct in any way,
+     * as we essentially were just faking a server response through code.
+
     fun createUnsuccessfulTask(): Task<DataSnapshot> {
         return object : Task<DataSnapshot>() {
             override fun addOnFailureListener(p0: OnFailureListener): Task<DataSnapshot> {
@@ -95,4 +97,5 @@ object Utils {
 
         }
     }
+    */
 }

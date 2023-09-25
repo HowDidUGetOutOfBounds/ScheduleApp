@@ -16,6 +16,8 @@ sealed class DownloadStatus<out T> {
 
     data class Error(val message: String) : DownloadStatus<Nothing>()
 
+    data class WeakProgress(val message: String): DownloadStatus<Nothing>()
+
     object Progress: DownloadStatus<Nothing>()
 
 }

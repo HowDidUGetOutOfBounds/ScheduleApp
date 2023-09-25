@@ -6,11 +6,11 @@ data class FlatScheduleDetailed (
     var lessonList     : ArrayList<Data_IntString>     = arrayListOf(),
     var teacherList    : ArrayList<Data_IntString>    = arrayListOf(),
     var dayList        : ArrayList<Data_IntDate>        = arrayListOf(),
-    var scheduleDay   : ArrayList<Data_IntArrayofInt>   = arrayListOf(),
-    var scheduleGroup : ArrayList<Data_IntArrayofInt> = arrayListOf(),
-    var scheduleLesson : ArrayList<Data_IntIntIntArrayofInt> = arrayListOf(),
-    var cabinetLesson  : ArrayList<Data_IntIntIntArrayofInt>  = arrayListOf(),
-    var teacherLesson  : ArrayList<Data_IntIntIntArrayofInt>  = arrayListOf()
+    var scheduleDay   : ArrayList<Data_IntArray>   = arrayListOf(),
+    var scheduleGroup : ArrayList<Data_IntArray> = arrayListOf(),
+    var scheduleLesson : ArrayList<Data_IntIntIntArrayArray> = arrayListOf(),
+    var cabinetLesson  : ArrayList<Data_IntIntIntArrayArray>  = arrayListOf(),
+    var teacherLesson  : ArrayList<Data_IntIntIntArrayArray>  = arrayListOf()
 )
 
 data class Data_IntString (
@@ -23,14 +23,15 @@ data class Data_IntDate (
     var id   : Int?  = null
 )
 
-data class Data_IntArrayofInt (
+data class Data_IntArray (
     var specialId     : Int?           = null,
     var scheduleId : ArrayList<Int> = arrayListOf()
 )
 
-data class Data_IntIntIntArrayofInt (
+data class Data_IntIntIntArrayArray (
     var scheduleId : Int? = null,
-    var lessonNum  : Int? = null,
+    var pairNum  : Int? = null,
+    var subPairs  : ArrayList<Int> = arrayListOf(),
     var subGroups  : ArrayList<Int> = arrayListOf(),
     var specialId  : Int? = null
 )
