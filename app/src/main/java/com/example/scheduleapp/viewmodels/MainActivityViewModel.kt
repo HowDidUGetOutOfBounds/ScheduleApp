@@ -5,13 +5,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
-import com.example.scheduleapp.data.AuthenticationStatus
-import com.example.scheduleapp.data.Constants.APP_BD_PATHS_GROUP_LIST
-import com.example.scheduleapp.data.Constants.APP_BD_PATHS_SCHEDULE_LIST
+import com.example.scheduleapp.data.*
+import com.example.scheduleapp.data.Constants.APP_BD_PATHS_BASE_PARAMETERS
+import com.example.scheduleapp.data.Constants.APP_BD_PATHS_SCHEDULE_CURRENT
 import com.example.scheduleapp.data.Constants.APP_CALENDER_DAY_OF_WEEK
-import com.example.scheduleapp.data.Data_IntString
-import com.example.scheduleapp.data.DownloadStatus
-import com.example.scheduleapp.data.FlatScheduleDetailed
 import com.example.scheduleapp.models.FirebaseRepository
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
@@ -30,11 +27,11 @@ class MainActivityViewModel @Inject constructor(
     private val sPreferences: SharedPreferences
 ) : ViewModel() {
     var authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
-    var groupsDownloadState: MutableLiveData<DownloadStatus<ArrayList<Data_IntString>>> = MutableLiveData()
+    var paramsDownloadState: MutableLiveData<DownloadStatus<FlatScheduleParameters>> = MutableLiveData()
     var scheduleDownloadState: MutableLiveData<DownloadStatus<FlatScheduleDetailed>> = MutableLiveData()
 
-    private var groupList = arrayListOf<Data_IntString>()
-    private var flatSchedule = FlatScheduleDetailed()
+    private var flatScheduleParameters = FlatScheduleParameters()
+    private var flatScheduleDetailed = FlatScheduleDetailed()
 
     private lateinit var timer: Timer
     private lateinit var listenerToRemove: OnCompleteListener<DataSnapshot>
@@ -47,20 +44,20 @@ class MainActivityViewModel @Inject constructor(
         authState = MutableLiveData()
     }
 
-    fun resetDownloadState(onlyGroups: Boolean) {
-        if (onlyGroups) {
-            groupsDownloadState = MutableLiveData()
+    fun resetDownloadState(onlyParams: Boolean) {
+        if (onlyParams) {
+            paramsDownloadState = MutableLiveData()
         } else {
             scheduleDownloadState = MutableLiveData()
         }
     }
 
-    fun downloadGroupList() {
-        groupsDownloadState.value = DownloadStatus.Progress
+    fun downloadParameters() {
+        paramsDownloadState.value = DownloadStatus.Progress
         setTimeout(5000L, true)
 
         listenerToRemove = getDownloadListener(true)
-        rImplementation.downloadByReference(APP_BD_PATHS_GROUP_LIST)
+        rImplementation.downloadByReference(APP_BD_PATHS_BASE_PARAMETERS)
             .addOnCompleteListener(listenerToRemove)
     }
 
@@ -69,11 +66,11 @@ class MainActivityViewModel @Inject constructor(
         setTimeout(8000L, false)
 
         listenerToRemove = getDownloadListener(false)
-        rImplementation.downloadByReference(APP_BD_PATHS_SCHEDULE_LIST)
+        rImplementation.downloadByReference(APP_BD_PATHS_SCHEDULE_CURRENT)
             .addOnCompleteListener(listenerToRemove)
     }
 
-    fun getDownloadListener(onlyGroups: Boolean): OnCompleteListener<DataSnapshot> {
+    fun getDownloadListener(onlyParams: Boolean): OnCompleteListener<DataSnapshot> {
         val listener = OnCompleteListener<DataSnapshot> { task ->
             if (task.isSuccessful) {
                 timer.cancel()
@@ -81,31 +78,31 @@ class MainActivityViewModel @Inject constructor(
                 Log.d("TAG", task.result.value.toString())
 
                 try {
-                    if (onlyGroups) {
-                        groupList = Gson().fromJson(
+                    if (onlyParams) {
+                        flatScheduleParameters = Gson().fromJson(
                             task.result.value.toString(),
-                            object : TypeToken<ArrayList<Data_IntString>>() {}.type
+                            FlatScheduleParameters::class.java
                         )
-                        groupsDownloadState.value = DownloadStatus.Success(groupList)
+                        paramsDownloadState.value = DownloadStatus.Success(flatScheduleParameters)
                     } else {
-                        flatSchedule = Gson().fromJson(
+                        flatScheduleDetailed = Gson().fromJson(
                             task.result.value.toString(),
                             FlatScheduleDetailed::class.java
                         )
-                        scheduleDownloadState.value = DownloadStatus.Success(flatSchedule)
+                        scheduleDownloadState.value = DownloadStatus.Success(flatScheduleDetailed)
                     }
                     Log.d("TAG", "Successfully read and converted the data.")
                 } catch (e: Exception) {
-                    if (onlyGroups) {
-                        groupsDownloadState.value = DownloadStatus.Error(e.message.toString())
+                    if (onlyParams) {
+                        paramsDownloadState.value = DownloadStatus.Error(e.message.toString())
                     } else {
                         scheduleDownloadState.value = DownloadStatus.Error(e.message.toString())
                     }
                     Log.d("TAG", "Failed to convert the data: ${e.message}")
                 }
             } else {
-                if (onlyGroups) {
-                    groupsDownloadState.value = DownloadStatus.Error("Connection or network error.")
+                if (onlyParams) {
+                    paramsDownloadState.value = DownloadStatus.Error("Connection or network error.")
                 } else {
                     scheduleDownloadState.value = DownloadStatus.Error("Connection or network error.")
                 }
@@ -115,13 +112,13 @@ class MainActivityViewModel @Inject constructor(
         return listener
     }
 
-    private fun setTimeout(time: Long, onlyGroups: Boolean) {
+    private fun setTimeout(time: Long, onlyParams: Boolean) {
         timer = Timer()
         val timerTask = object : TimerTask() {
             override fun run() {
                 MainScope().launch {
-                    if (onlyGroups) {
-                        groupsDownloadState.value = DownloadStatus.WeakProgress("Looks like there are some problems with connection...")
+                    if (onlyParams) {
+                        paramsDownloadState.value = DownloadStatus.WeakProgress("Looks like there are some problems with connection...")
                     } else {
                         scheduleDownloadState.value = DownloadStatus.WeakProgress("Looks like there are some problems with connection...")
                     }
@@ -132,12 +129,16 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun getSchedule(): FlatScheduleDetailed {
-        return flatSchedule
+        return flatScheduleDetailed
+    }
+
+    fun getParameters(): FlatScheduleParameters {
+        return flatScheduleParameters
     }
 
     fun getGroupNames(): ArrayList<String> {
         val groupNames = arrayListOf<String>()
-        for (item in groupList) {
+        for (item in flatScheduleParameters.groupList) {
             groupNames.add(item.title!!)
         }
         return groupNames
@@ -152,7 +153,8 @@ class MainActivityViewModel @Inject constructor(
         }
 
         val weekDay = APP_CALENDER_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK) - 1]
-        val day = c.get(Calendar.DAY_OF_MONTH)
+        var day = c.get(Calendar.DAY_OF_MONTH).toString()
+        if (day.length < 2) { day = "0$day" }
 
         return "$weekDay${System.getProperty("line.separator")}$day"
     }

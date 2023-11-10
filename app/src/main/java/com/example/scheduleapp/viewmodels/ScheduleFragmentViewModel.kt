@@ -64,7 +64,7 @@ class ScheduleFragmentViewModel @Inject constructor(
     }
 
     fun getScheduleByGroupAndDayDetailed(
-        groupId: Int, dayId: Int, schedule: FlatScheduleDetailed
+        groupId: Int, dayId: Int, schedule: FlatScheduleDetailed, parameters: FlatScheduleParameters
     ): ArrayList<Schedule>? {
         val resArray = arrayListOf<Schedule>()
 
@@ -108,19 +108,19 @@ class ScheduleFragmentViewModel @Inject constructor(
                 if (item.subGroups.contains(1)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].cabinet1 =
-                            getById(item.specialId!!, schedule.cabinetList)!!.title!!
+                            getById(item.specialId!!, parameters.cabinetList)!!.title!!
                     }
                 }
                 if (item.subGroups.contains(2)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].cabinet2 =
-                            getById(item.specialId!!, schedule.cabinetList)!!.title!!
+                            getById(item.specialId!!, parameters.cabinetList)!!.title!!
                     }
                 }
                 if (item.subGroups.contains(3)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].cabinet3 =
-                            getById(item.specialId!!, schedule.cabinetList)!!.title!!
+                            getById(item.specialId!!, parameters.cabinetList)!!.title!!
                     }
                 }
             }
@@ -130,19 +130,19 @@ class ScheduleFragmentViewModel @Inject constructor(
                 if (item.subGroups.contains(1)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].discipline1 =
-                            getById(item.specialId!!, schedule.lessonList)!!.title!!
+                            getById(item.specialId!!, parameters.lessonList)!!.title!!
                     }
                 }
                 if (item.subGroups.contains(2)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].discipline2 =
-                            getById(item.specialId!!, schedule.lessonList)!!.title!!
+                            getById(item.specialId!!, parameters.lessonList)!!.title!!
                     }
                 }
                 if (item.subGroups.contains(3)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].discipline3 =
-                            getById(item.specialId!!, schedule.lessonList)!!.title!!
+                            getById(item.specialId!!, parameters.lessonList)!!.title!!
                     }
                 }
             }
@@ -152,19 +152,19 @@ class ScheduleFragmentViewModel @Inject constructor(
                 if (item.subGroups.contains(1)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].teacher1 =
-                            getById(item.specialId!!, schedule.teacherList)!!.title!!
+                            getById(item.specialId!!, parameters.teacherList)!!.title!!
                     }
                 }
                 if (item.subGroups.contains(2)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].teacher2 =
-                            getById(item.specialId!!, schedule.teacherList)!!.title!!
+                            getById(item.specialId!!, parameters.teacherList)!!.title!!
                     }
                 }
                 if (item.subGroups.contains(3)) {
                     for (subPair in item.subPairs) {
                         result[(item.pairNum!! - 1) * 2 + (subPair - 1)].teacher3 =
-                            getById(item.specialId!!, schedule.teacherList)!!.title!!
+                            getById(item.specialId!!, parameters.teacherList)!!.title!!
                     }
                 }
             }

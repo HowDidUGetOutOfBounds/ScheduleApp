@@ -17,6 +17,7 @@ import com.example.scheduleapp.data.Constants.APP_MIN_PASSWORD_LENGTH
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
 import com.example.scheduleapp.data.Data_IntString
 import com.example.scheduleapp.data.DownloadStatus
+import com.example.scheduleapp.data.FlatScheduleParameters
 import com.example.scheduleapp.databinding.FragmentLoginBinding
 import com.example.scheduleapp.utils.Utils.getBlankStringsChecker
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
@@ -41,12 +42,12 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initDownloadObservers()
-        viewModel.downloadGroupList()
+        viewModel.downloadParameters()
     }
 
     private fun initDownloadObservers() {
         viewModel.resetDownloadState(true)
-        viewModel.groupsDownloadState.observe(viewLifecycleOwner) { downloadStatus ->
+        viewModel.paramsDownloadState.observe(viewLifecycleOwner) { downloadStatus ->
             when (downloadStatus) {
                 is DownloadStatus.Progress -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -66,7 +67,7 @@ class LoginFragment : Fragment() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                is DownloadStatus.Success<ArrayList<Data_IntString>> -> {
+                is DownloadStatus.Success<FlatScheduleParameters> -> {
                     binding.progressBar.visibility = View.GONE
 
                     if (viewModel.isUserSingedIn()) {
