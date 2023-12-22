@@ -13,7 +13,6 @@ import com.example.scheduleapp.R
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_PUSHES
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
-import com.example.scheduleapp.data.Data_IntString
 import com.example.scheduleapp.databinding.FragmentSettingsBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint

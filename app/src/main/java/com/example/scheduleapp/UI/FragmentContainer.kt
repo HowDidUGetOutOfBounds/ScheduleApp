@@ -1,7 +1,6 @@
 package com.example.scheduleapp.UI
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +11,11 @@ import com.example.scheduleapp.R
 import com.example.scheduleapp.adapters.MainScreenAdapter
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
+import com.example.scheduleapp.data.Constants.APP_TOAST_SCHEDULE_DOWNLOAD_FAILED
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.data.FlatScheduleDetailed
 import com.example.scheduleapp.databinding.FragmentContainerBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
-import com.example.scheduleapp.viewmodels.ScheduleFragmentViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -81,7 +80,7 @@ class FragmentContainer : Fragment() {
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(
                         activity,
-                        "Failed to download Schedule: ${downloadStatus.message}",
+                        "$APP_TOAST_SCHEDULE_DOWNLOAD_FAILED: ${downloadStatus.message}",
                         Toast.LENGTH_LONG
                     ).show()
                 }

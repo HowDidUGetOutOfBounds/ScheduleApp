@@ -9,6 +9,7 @@ import com.example.scheduleapp.data.*
 import com.example.scheduleapp.data.Constants.APP_BD_PATHS_BASE_PARAMETERS
 import com.example.scheduleapp.data.Constants.APP_BD_PATHS_SCHEDULE_CURRENT
 import com.example.scheduleapp.data.Constants.APP_CALENDER_DAY_OF_WEEK
+import com.example.scheduleapp.data.Constants.APP_TOAST_WEAK_CONNECTION
 import com.example.scheduleapp.models.FirebaseRepository
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
@@ -118,9 +119,9 @@ class MainActivityViewModel @Inject constructor(
             override fun run() {
                 MainScope().launch {
                     if (onlyParams) {
-                        paramsDownloadState.value = DownloadStatus.WeakProgress("Looks like there are some problems with connection...")
+                        paramsDownloadState.value = DownloadStatus.WeakProgress(APP_TOAST_WEAK_CONNECTION)
                     } else {
-                        scheduleDownloadState.value = DownloadStatus.WeakProgress("Looks like there are some problems with connection...")
+                        scheduleDownloadState.value = DownloadStatus.WeakProgress(APP_TOAST_WEAK_CONNECTION)
                     }
                 }
             }

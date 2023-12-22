@@ -1,15 +1,12 @@
 package com.example.scheduleapp.UI
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,8 +16,10 @@ import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants.APP_MIN_PASSWORD_LENGTH
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP_REGISTER
-import com.example.scheduleapp.data.Data_IntString
-import com.example.scheduleapp.data.DownloadStatus
+import com.example.scheduleapp.data.Constants.APP_TOAST_PASSWORDS_DONT_MATCH
+import com.example.scheduleapp.data.Constants.APP_TOAST_PASSWORD_TOO_SHORT
+import com.example.scheduleapp.data.Constants.APP_TOAST_SIGNUP_FAILED
+import com.example.scheduleapp.data.Constants.APP_TOAST_SIGNUP_SUCCESS
 import com.example.scheduleapp.databinding.FragmentRegistrationBinding
 import com.example.scheduleapp.utils.Utils.getBlankStringsChecker
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
@@ -84,9 +83,9 @@ class RegistrationFragment : Fragment() {
 
     private fun signUp() {
         if (binding.userPassword1.text.toString().count() < APP_MIN_PASSWORD_LENGTH) {
-            Toast.makeText(activity, "Your password should be at least $APP_MIN_PASSWORD_LENGTH characters long", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, APP_TOAST_PASSWORD_TOO_SHORT, Toast.LENGTH_SHORT).show()
         } else if (!binding.userPassword1.text.toString().equals(binding.userPassword2.text.toString())) {
-            Toast.makeText(activity, "Your passwords don't match. Please confirm your password.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, APP_TOAST_PASSWORDS_DONT_MATCH, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.signIn(binding.userEmail.text.toString(), binding.userPassword1.text.toString(), true)
         }
@@ -99,7 +98,7 @@ class RegistrationFragment : Fragment() {
                 is AuthenticationStatus.Success -> {
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
-                    Toast.makeText(activity, "Registered successfully.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "$APP_TOAST_SIGNUP_SUCCESS.", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", "Successful registration")
 
                     viewModel.editPreferences(APP_PREFERENCES_GROUP + "_" + binding.userEmail.text.toString(), viewModel.getPreference(APP_PREFERENCES_GROUP_REGISTER, ""))
@@ -110,7 +109,7 @@ class RegistrationFragment : Fragment() {
                 is AuthenticationStatus.Error -> {
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
-                    Toast.makeText(activity, "Failed to sign up: ${authStatus.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "$APP_TOAST_SIGNUP_FAILED: ${authStatus.message}", Toast.LENGTH_LONG).show()
                     Log.d("TAG", authStatus.message)
                 }
                 is AuthenticationStatus.Progress -> {

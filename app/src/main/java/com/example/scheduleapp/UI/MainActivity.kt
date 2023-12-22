@@ -13,10 +13,10 @@ import androidx.navigation.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_PUSHES
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
+import com.example.scheduleapp.data.Constants.APP_TOAST_NOT_SIGNED_IN
 import com.example.scheduleapp.databinding.ActivityMainBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.settings -> {
                 if (!viewModel.isUserSingedIn()) {
-                    Toast.makeText(this, "You aren't signed in yet.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, APP_TOAST_NOT_SIGNED_IN, Toast.LENGTH_SHORT).show()
                     return false
                 } else if (supportFragmentManager.primaryNavigationFragment!!.childFragmentManager.fragments.last()::class.java == SettingsFragment::class.java) {
                     Log.d("TAG", "Refusing to go to settings.")

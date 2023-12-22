@@ -1,21 +1,20 @@
 package com.example.scheduleapp.UI
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.data.AuthenticationStatus
 import com.example.scheduleapp.data.Constants.APP_MIN_PASSWORD_LENGTH
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
-import com.example.scheduleapp.data.Data_IntString
+import com.example.scheduleapp.data.Constants.APP_TOAST_DATA_DOWNLOAD_FAILED
+import com.example.scheduleapp.data.Constants.APP_TOAST_LOGIN_FAILED
+import com.example.scheduleapp.data.Constants.APP_TOAST_LOGIN_SUCCESS
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.data.FlatScheduleParameters
 import com.example.scheduleapp.databinding.FragmentLoginBinding
@@ -41,6 +40,12 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (viewModel.isUserSingedIn()) {
+            if (!viewModel.getPreference(APP_PREFERENCES_STAY, false)) {
+                viewModel.signOut()
+            }
+        }
+
         initDownloadObservers()
         viewModel.downloadParameters()
     }
@@ -63,7 +68,7 @@ class LoginFragment : Fragment() {
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(
                         activity,
-                        "Failed to download data from DB: ${downloadStatus.message}",
+                        "$APP_TOAST_DATA_DOWNLOAD_FAILED: ${downloadStatus.message}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -71,12 +76,8 @@ class LoginFragment : Fragment() {
                     binding.progressBar.visibility = View.GONE
 
                     if (viewModel.isUserSingedIn()) {
-                        if (!viewModel.getPreference(APP_PREFERENCES_STAY, false)) {
-                            viewModel.signOut()
-                        } else {
-                            requireView().findNavController()
-                                .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
-                        }
+                        requireView().findNavController()
+                            .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
                     }
                     initializeView()
                     initAuthObservers()
@@ -95,7 +96,7 @@ class LoginFragment : Fragment() {
                 is AuthenticationStatus.Success -> {
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
-                    Toast.makeText(activity, "Logged in successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "$APP_TOAST_LOGIN_SUCCESS.", Toast.LENGTH_SHORT).show()
                     Log.d("TAG", "Successful login")
                     requireView().findNavController()
                         .navigate(LoginFragmentDirections.actionLoginFragmentToFragmentContainer())
@@ -103,7 +104,7 @@ class LoginFragment : Fragment() {
                 is AuthenticationStatus.Error -> {
                     setButtonVisibility()
                     binding.progressBar.visibility = View.GONE
-                    Toast.makeText(activity, "Failed to log in: ${authStatus.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "$APP_TOAST_LOGIN_FAILED: ${authStatus.message}", Toast.LENGTH_LONG).show()
                     Log.d("TAG", authStatus.message)
                 }
                 is AuthenticationStatus.Progress -> {
