@@ -1,5 +1,9 @@
 package com.example.scheduleapp.viewmodels
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -12,10 +16,8 @@ import com.example.scheduleapp.data.Constants.APP_CALENDER_DAY_OF_WEEK
 import com.example.scheduleapp.data.Constants.APP_TOAST_WEAK_CONNECTION
 import com.example.scheduleapp.models.FirebaseRepository
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import java.util.*
@@ -28,8 +30,10 @@ class MainActivityViewModel @Inject constructor(
     private val sPreferences: SharedPreferences
 ) : ViewModel() {
     var authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
-    var paramsDownloadState: MutableLiveData<DownloadStatus<FlatScheduleParameters>> = MutableLiveData()
-    var scheduleDownloadState: MutableLiveData<DownloadStatus<FlatScheduleDetailed>> = MutableLiveData()
+    var paramsDownloadState: MutableLiveData<DownloadStatus<FlatScheduleParameters>> =
+        MutableLiveData()
+    var scheduleDownloadState: MutableLiveData<DownloadStatus<FlatScheduleDetailed>> =
+        MutableLiveData()
 
     private var flatScheduleParameters = FlatScheduleParameters()
     private var flatScheduleDetailed = FlatScheduleDetailed()
@@ -105,7 +109,8 @@ class MainActivityViewModel @Inject constructor(
                 if (onlyParams) {
                     paramsDownloadState.value = DownloadStatus.Error("Connection or network error.")
                 } else {
-                    scheduleDownloadState.value = DownloadStatus.Error("Connection or network error.")
+                    scheduleDownloadState.value =
+                        DownloadStatus.Error("Connection or network error.")
                 }
                 Log.d("TAG", "Failed to download data from the database.")
             }
@@ -119,9 +124,11 @@ class MainActivityViewModel @Inject constructor(
             override fun run() {
                 MainScope().launch {
                     if (onlyParams) {
-                        paramsDownloadState.value = DownloadStatus.WeakProgress(APP_TOAST_WEAK_CONNECTION)
+                        paramsDownloadState.value =
+                            DownloadStatus.WeakProgress(APP_TOAST_WEAK_CONNECTION)
                     } else {
-                        scheduleDownloadState.value = DownloadStatus.WeakProgress(APP_TOAST_WEAK_CONNECTION)
+                        scheduleDownloadState.value =
+                            DownloadStatus.WeakProgress(APP_TOAST_WEAK_CONNECTION)
                     }
                 }
             }
@@ -146,7 +153,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun getDayToTab(index: Int): String {
-        val position = index - PAGE_COUNT/2
+        val position = index - PAGE_COUNT / 2
         val c = Calendar.getInstance()
 
         if (position != 0) {
@@ -155,7 +162,9 @@ class MainActivityViewModel @Inject constructor(
 
         val weekDay = APP_CALENDER_DAY_OF_WEEK[c.get(Calendar.DAY_OF_WEEK) - 1]
         var day = c.get(Calendar.DAY_OF_MONTH).toString()
-        if (day.length < 2) { day = "0$day" }
+        if (day.length < 2) {
+            day = "0$day"
+        }
 
         return "$weekDay${System.getProperty("line.separator")}$day"
     }
@@ -217,4 +226,35 @@ class MainActivityViewModel @Inject constructor(
             return (sPreferences.getString(preference, (defValue as String)) as T)
         }
     }
+
+    fun setNotification(
+        context: Context?,
+        alarmManager: AlarmManager
+    ) {
+        Log.d("ITS_NOT", "set notification")
+        val alarmIntent: PendingIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(
+                context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
+            )
+        }
+        Log.d("ITS_NOT", "calendar:${Calendar.getInstance().get(Calendar.DAY_OF_MONTH)}\n ${Calendar.getInstance().get(Calendar.HOUR)}\n${Calendar.getInstance().get(Calendar.MINUTE)}")
+        alarmManager.setRepeating(
+
+//            AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis, 180000L, alarmIntent
+            AlarmManager.RTC_WAKEUP,  Calendar.getInstance().timeInMillis,5000L, alarmIntent
+        )
+    }
+
+
+    fun cancelNotification(context: Context?, alarmManager: AlarmManager){
+        Log.d("ITS_NOT", "cancel Notification: ")
+        val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(
+                context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT+ PendingIntent.FLAG_MUTABLE
+            )
+        }
+        alarmManager.cancel(alarmIntent)
+    }
+
+
 }

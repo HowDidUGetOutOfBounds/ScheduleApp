@@ -1,5 +1,7 @@
 package com.example.scheduleapp.UI
 
+import android.app.AlarmManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class SettingsFragment : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentSettingsBinding
+    private lateinit var alarmManager: AlarmManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,31 +41,59 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.enablePushesCheckBox.isChecked = viewModel.getPreference(APP_PREFERENCES_PUSHES, false)
-        binding.staySignedInCheckBox.isChecked = viewModel.getPreference(APP_PREFERENCES_STAY, false)
-        binding.enablePushesCheckBox.setOnCheckedChangeListener(){v, checked ->
+        alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        binding.enablePushesCheckBox.isChecked =
+            viewModel.getPreference(APP_PREFERENCES_PUSHES, false)
+        binding.staySignedInCheckBox.isChecked =
+            viewModel.getPreference(APP_PREFERENCES_STAY, false)
+        binding.enablePushesCheckBox.setOnCheckedChangeListener() { v, checked ->
+            if (checked && !viewModel.getPreference(APP_PREFERENCES_PUSHES, false)) {
+                viewModel.setNotification(context, alarmManager)
+            } else if (!checked && viewModel.getPreference(APP_PREFERENCES_PUSHES, false)) {
+                viewModel.cancelNotification(context, alarmManager)
+            }
             viewModel.editPreferences(APP_PREFERENCES_PUSHES, checked)
         }
-        binding.staySignedInCheckBox.setOnCheckedChangeListener(){v, checked ->
+        binding.staySignedInCheckBox.setOnCheckedChangeListener() { v, checked ->
             viewModel.editPreferences(APP_PREFERENCES_STAY, checked)
         }
 
-        binding.selectGroupSpinner.adapter = ArrayAdapter((activity as MainActivity), R.layout.spinner_item, viewModel.getGroupNames()).also { adapter ->
+        binding.selectGroupSpinner.adapter = ArrayAdapter(
+            (activity as MainActivity),
+            R.layout.spinner_item,
+            viewModel.getGroupNames()
+        ).also { adapter ->
             adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
-            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(getGroupPreferencesId(), "")) {
+            if (binding.selectGroupSpinner.getItemAtPosition(i)
+                    .toString() == viewModel.getPreference(getGroupPreferencesId(), "")
+            ) {
                 binding.selectGroupSpinner.setSelection(i)
                 break
             }
         }
-        binding.selectGroupSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.editPreferences(getGroupPreferencesId(), parent?.getItemAtPosition(position).toString())
-                (activity as MainActivity).title = viewModel.getPreference(getGroupPreferencesId(), resources.getString(R.string.app_name))
+        binding.selectGroupSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    viewModel.editPreferences(
+                        getGroupPreferencesId(),
+                        parent?.getItemAtPosition(position).toString()
+                    )
+                    (activity as MainActivity).title = viewModel.getPreference(
+                        getGroupPreferencesId(),
+                        resources.getString(R.string.app_name)
+                    )
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
 
         binding.logoutTrigger.setOnClickListener {
             logOut()
@@ -79,7 +110,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun getGroupPreferencesId(): String {
-        return APP_PREFERENCES_GROUP+"_"+viewModel.getUserEmail()
+        return APP_PREFERENCES_GROUP + "_" + viewModel.getUserEmail()
     }
 
 }
