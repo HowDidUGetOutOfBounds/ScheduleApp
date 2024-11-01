@@ -3,6 +3,7 @@ package com.example.scheduleapp.UI
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -102,6 +103,17 @@ class FragmentContainer : Fragment() {
                 else -> {
                     throw IllegalStateException()
                 }
+            }
+        }
+    }
+
+    fun reloadSchedule() {
+        when (viewModel.scheduleDownloadState.value) {
+            is DownloadStatus.Success, is DownloadStatus.Error -> {
+                viewModel.downloadSchedule()
+            }
+            else -> {
+                Log.d("TAG", "Not reloading current fragment because of an unfinished process.")
             }
         }
     }

@@ -52,17 +52,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.settings -> {
-                if (!viewModel.isUserSingedIn()) {
-                    Toast.makeText(this, APP_TOAST_NOT_SIGNED_IN, Toast.LENGTH_SHORT).show()
-                    return false
-                } else if (supportFragmentManager.primaryNavigationFragment!!.childFragmentManager.fragments.last()::class.java == SettingsFragment::class.java) {
-                    Log.d("TAG", "Refusing to go to settings.")
-                    return false
-                } else {
-                    binding.container.findNavController().navigate(R.id.settingsFragment)
-                    return true
+        if (!viewModel.isUserSingedIn()) {
+            Toast.makeText(this, APP_TOAST_NOT_SIGNED_IN, Toast.LENGTH_SHORT).show()
+            return false
+        } else {
+            val currentFragment = supportFragmentManager.primaryNavigationFragment!!.childFragmentManager.fragments.last()
+            when (item.itemId) {
+                R.id.settings -> {
+                    if (currentFragment::class.java == SettingsFragment::class.java) {
+                        Log.d("TAG", "Refusing to go to settings.")
+                        return false
+                    } else {
+                        binding.container.findNavController().navigate(R.id.settingsFragment)
+                        return true
+                    }
+                }
+
+                R.id.reloadButton -> {
+                    if (currentFragment::class.java != FragmentContainer::class.java) {
+                        Log.d("TAG", "Refusing to reload fragment container.")
+                        return false
+                    } else {
+                        (currentFragment as FragmentContainer).reloadSchedule()
+                        return true
+                    }
                 }
             }
         }

@@ -5,6 +5,12 @@
     tools:context=".MainActivity">
 
     <item
+        android:id="@+id/reloadButton"
+        android:icon="@drawable/icon_reload"
+        android:title="reload"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/settings"
         android:icon="@drawable/icon_setting"
         android:title="settings"
