@@ -74,7 +74,7 @@ class MainActivityViewModel @Inject constructor(
             .addOnCompleteListener(listenerToRemove)
     }
 
-    fun getDownloadListener(onlyParams: Boolean): OnCompleteListener<DataSnapshot> {
+    private fun getDownloadListener(onlyParams: Boolean): OnCompleteListener<DataSnapshot> {
         val listener = OnCompleteListener<DataSnapshot> { task ->
             if (task.isSuccessful) {
                 timer.cancel()
@@ -108,8 +108,7 @@ class MainActivityViewModel @Inject constructor(
                 if (onlyParams) {
                     paramsDownloadState.value = DownloadStatus.Error("Connection or network error.")
                 } else {
-                    scheduleDownloadState.value =
-                        DownloadStatus.Error("Connection or network error.")
+                    scheduleDownloadState.value = DownloadStatus.Error("Connection or network error.")
                 }
                 Log.d("TAG", "Failed to download data from the database.")
             }
@@ -231,7 +230,7 @@ class MainActivityViewModel @Inject constructor(
         context: Context?,
         alarmManager: AlarmManager
     ) {
-        Log.d("ITS_NOT", "Notification set")
+        Log.d("Not_Debugger", "Notification set")
         val alarmIntent: PendingIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(
                 context, REQUEST_CODE_LOC_NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
@@ -244,7 +243,7 @@ class MainActivityViewModel @Inject constructor(
 
 
     fun cancelNotification(context: Context?, alarmManager: AlarmManager){
-        Log.d("ITS_NOT", "Notification cancelled")
+        Log.d("Not_Debugger", "Notification cancelled")
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(
                 context, REQUEST_CODE_LOC_NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE

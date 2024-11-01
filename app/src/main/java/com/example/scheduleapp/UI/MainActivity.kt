@@ -1,6 +1,8 @@
 package com.example.scheduleapp.UI
 
 import android.Manifest
+import android.app.AlarmManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -15,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_PUSHES
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_SCHEDULE_VERSION
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
 import com.example.scheduleapp.data.Constants.APP_TOAST_NOT_SIGNED_IN
 import com.example.scheduleapp.databinding.ActivityMainBinding
@@ -40,8 +43,12 @@ class MainActivity : AppCompatActivity() {
         )
         viewModel.editPreferences(
             APP_PREFERENCES_PUSHES,
-            (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) && viewModel.getPreference(APP_PREFERENCES_PUSHES, false)
+            (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) && viewModel.getPreference(APP_PREFERENCES_PUSHES, false)
         )
+
+        if (viewModel.getPreference(APP_PREFERENCES_PUSHES, false)) {
+            viewModel.setNotification(this, getSystemService(Context.ALARM_SERVICE) as AlarmManager)
+        }
 
     }
 

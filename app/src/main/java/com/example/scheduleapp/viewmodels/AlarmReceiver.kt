@@ -20,30 +20,79 @@ import com.example.scheduleapp.R
 import com.example.scheduleapp.UI.MainActivity
 import com.example.scheduleapp.UI.MainActivity.Companion.REQUEST_CODE_LOC_NOTIFICATION_MAIN_THREAD
 import com.example.scheduleapp.data.Constants
+import com.example.scheduleapp.data.Constants.APP_BD_PATHS_VERSION
 import com.example.scheduleapp.data.Constants.APP_KEY_CHANNEL_ID
-import com.example.scheduleapp.models.FirebaseRepository
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_SCHEDULE_VERSION
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
+import java.util.Timer
+import java.util.TimerTask
 
 class AlarmReceiver : BroadcastReceiver() {
+    private lateinit var fDatabase: FirebaseDatabase
+    private lateinit var sPreferences: SharedPreferences
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("ITS_NOT", "Alarm receiver")
+        Log.d("Not_Debugger", "Receiver transaction began.")
 
-        val fDatabase = FirebaseDatabase.getInstance()
-        val sPreferences = context.getSharedPreferences(Constants.APP_PREFERENCES, Context.MODE_PRIVATE)
+        fDatabase = FirebaseDatabase.getInstance()
+        sPreferences = context.getSharedPreferences(Constants.APP_PREFERENCES, Context.MODE_PRIVATE)
 
-        sendNotification(context)
+        var currVersion: Long
+
+        val mainTask = downloadByReference(APP_BD_PATHS_VERSION)
+        var listener: OnCompleteListener<DataSnapshot>?
+        val timer = setTimeout(5000L) {
+            Log.d("Not_Debugger", "Ran out of time to download.")
+            listener = null
+        }
+
+        listener = OnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d("Not_Debugger", "Download successful.")
+                timer.cancel()
+                currVersion = task.result.value.toString().toLong()
+                if (currVersion > sPreferences.getLong(APP_PREFERENCES_SCHEDULE_VERSION, 0)) {
+                    Log.d("Not_Debugger", "Sending notification.")
+                    sPreferences.edit().putLong(APP_PREFERENCES_SCHEDULE_VERSION, currVersion).apply()
+                    sendNotification(context)
+                }
+            }
+        }
+        mainTask.addOnCompleteListener(listener!!)
+    }
+
+    private fun downloadByReference(reference: String): Task<DataSnapshot> {
+        return fDatabase.getReference(reference).get()
+    }
+
+    private fun setTimeout(time: Long, timerFunction: ()->Unit): Timer {
+        val timer = Timer()
+        val timerTask = object : TimerTask() {
+            override fun run() {
+                MainScope().launch {
+                    timerFunction()
+                }
+            }
+        }
+        timer.schedule(timerTask, time)
+        return timer
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun sendNotification(context:Context){
         val name: CharSequence = "MyNotification"
         val description = "My notification channel description"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val importance = NotificationManager.IMPORTANCE_HIGH
         val notificationChannel = NotificationChannel(APP_KEY_CHANNEL_ID, name, importance)
         notificationChannel.description = description
         val notificationManager =
@@ -65,8 +114,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationBuilder = NotificationCompat.Builder(context, APP_KEY_CHANNEL_ID)
         notificationBuilder.setSmallIcon(R.mipmap.ic_launcher)
         notificationBuilder.setContentTitle("Расписание")
-        notificationBuilder.setContentText("Новое расписание")
-        notificationBuilder.priority = NotificationCompat.PRIORITY_DEFAULT
+        notificationBuilder.setContentText("Обновите расписание, новая версия вышла.")
+        notificationBuilder.priority = NotificationCompat.PRIORITY_HIGH
 
         notificationBuilder.setAutoCancel(true)
         notificationBuilder.setContentIntent(mainPendingIntent)

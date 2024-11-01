@@ -52,7 +52,7 @@ class SettingsFragment : Fragment() {
             viewModel.getPreference(APP_PREFERENCES_PUSHES, false)
         binding.staySignedInCheckBox.isChecked =
             viewModel.getPreference(APP_PREFERENCES_STAY, false)
-        binding.enablePushesCheckBox.setOnCheckedChangeListener() { v, checked ->
+        binding.enablePushesCheckBox.setOnCheckedChangeListener { v, checked ->
             if (checked && !viewModel.getPreference(APP_PREFERENCES_PUSHES, false)) {
                 viewModel.setNotification(context, alarmManager)
             } else if (!checked && viewModel.getPreference(APP_PREFERENCES_PUSHES, false)) {
@@ -77,9 +77,7 @@ class SettingsFragment : Fragment() {
             adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         }
         for (i in 0 until binding.selectGroupSpinner.adapter.count) {
-            if (binding.selectGroupSpinner.getItemAtPosition(i)
-                    .toString() == viewModel.getPreference(getGroupPreferencesId(), "")
-            ) {
+            if (binding.selectGroupSpinner.getItemAtPosition(i).toString() == viewModel.getPreference(getGroupPreferencesId(), "")) {
                 binding.selectGroupSpinner.setSelection(i)
                 break
             }
@@ -92,10 +90,7 @@ class SettingsFragment : Fragment() {
                     position: Int,
                     id: Long
                 ) {
-                    viewModel.editPreferences(
-                        getGroupPreferencesId(),
-                        parent?.getItemAtPosition(position).toString()
-                    )
+                    viewModel.editPreferences(getGroupPreferencesId(), parent?.getItemAtPosition(position).toString())
                     (activity as MainActivity).title = viewModel.getPreference(
                         getGroupPreferencesId(),
                         resources.getString(R.string.app_name)
