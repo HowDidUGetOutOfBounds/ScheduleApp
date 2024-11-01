@@ -1,13 +1,17 @@
 package com.example.scheduleapp.UI
 
+import android.Manifest
 import android.app.AlarmManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
@@ -15,6 +19,7 @@ import com.example.scheduleapp.R
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_PUSHES
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
+import com.example.scheduleapp.data.Constants.APP_TOAST_NOTIFICATIONS_NOT_ALLOWED
 import com.example.scheduleapp.databinding.FragmentSettingsBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,6 +62,11 @@ class SettingsFragment : Fragment() {
         }
         binding.staySignedInCheckBox.setOnCheckedChangeListener() { v, checked ->
             viewModel.editPreferences(APP_PREFERENCES_STAY, checked)
+        }
+
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(requireActivity(), APP_TOAST_NOTIFICATIONS_NOT_ALLOWED, Toast.LENGTH_LONG).show()
+            binding.enablePushesCheckBox.isEnabled = false
         }
 
         binding.selectGroupSpinner.adapter = ArrayAdapter(

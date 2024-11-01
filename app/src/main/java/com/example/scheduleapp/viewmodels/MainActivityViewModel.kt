@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.scheduleapp.UI.MainActivity.Companion.REQUEST_CODE_LOC_NOTIFICATION_ID
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.data.*
 import com.example.scheduleapp.data.Constants.APP_BD_PATHS_BASE_PARAMETERS
@@ -30,10 +31,8 @@ class MainActivityViewModel @Inject constructor(
     private val sPreferences: SharedPreferences
 ) : ViewModel() {
     var authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
-    var paramsDownloadState: MutableLiveData<DownloadStatus<FlatScheduleParameters>> =
-        MutableLiveData()
-    var scheduleDownloadState: MutableLiveData<DownloadStatus<FlatScheduleDetailed>> =
-        MutableLiveData()
+    var paramsDownloadState: MutableLiveData<DownloadStatus<FlatScheduleParameters>> = MutableLiveData()
+    var scheduleDownloadState: MutableLiveData<DownloadStatus<FlatScheduleDetailed>> = MutableLiveData()
 
     private var flatScheduleParameters = FlatScheduleParameters()
     private var flatScheduleDetailed = FlatScheduleDetailed()
@@ -227,34 +226,30 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+
     fun setNotification(
         context: Context?,
         alarmManager: AlarmManager
     ) {
-        Log.d("ITS_NOT", "set notification")
+        Log.d("ITS_NOT", "Notification set")
         val alarmIntent: PendingIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(
-                context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
+                context, REQUEST_CODE_LOC_NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
             )
         }
-        Log.d("ITS_NOT", "calendar:${Calendar.getInstance().get(Calendar.DAY_OF_MONTH)}\n ${Calendar.getInstance().get(Calendar.HOUR)}\n${Calendar.getInstance().get(Calendar.MINUTE)}")
         alarmManager.setRepeating(
-
-//            AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis, 180000L, alarmIntent
-            AlarmManager.RTC_WAKEUP,  Calendar.getInstance().timeInMillis,5000L, alarmIntent
-        )
+            AlarmManager.RTC_WAKEUP,  Calendar.getInstance().timeInMillis,60000L, alarmIntent
+        ) // 180000L
     }
 
 
     fun cancelNotification(context: Context?, alarmManager: AlarmManager){
-        Log.d("ITS_NOT", "cancel Notification: ")
+        Log.d("ITS_NOT", "Notification cancelled")
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(
-                context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT+ PendingIntent.FLAG_MUTABLE
+                context, REQUEST_CODE_LOC_NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_MUTABLE
             )
         }
         alarmManager.cancel(alarmIntent)
     }
-
-
 }

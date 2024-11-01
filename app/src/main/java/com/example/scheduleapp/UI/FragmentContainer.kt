@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.scheduleapp.R
+import com.example.scheduleapp.UI.MainActivity.Companion.REQUEST_CODE_LOC_NOTIFICATION_PERMISSION
 import com.example.scheduleapp.adapters.MainScreenAdapter
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
@@ -41,7 +42,7 @@ class FragmentContainer : Fragment() {
         if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             this.requestPermissions(
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                2
+                REQUEST_CODE_LOC_NOTIFICATION_PERMISSION
             )
         }
 

@@ -26,6 +26,9 @@ object Constants {
     const val APP_TOAST_PASSWORDS_DONT_MATCH = "Your passwords don't match. Please confirm your password."
     const val APP_TOAST_DATA_DOWNLOAD_FAILED = "Failed to download the data"
     const val APP_TOAST_SCHEDULE_DOWNLOAD_FAILED = "Failed to download the schedules"
+    const val APP_TOAST_NOTIFICATIONS_NOT_ALLOWED = "The application doesn't have notification permissions."
+
+    const val APP_KEY_CHANNEL_ID = "notifications_channel_id_101"
 
     val APP_CALENDER_DAY_OF_WEEK = listOf("вс", "пн", "вт", "ср", "чт", "пт", "сб")
 }
