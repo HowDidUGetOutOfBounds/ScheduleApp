@@ -3,6 +3,7 @@ package com.example.scheduleapp.data
 object Constants {
     const val APP_MIN_PASSWORD_LENGTH = 8
 
+
     const val APP_PREFERENCES = "APP_PREFERENCES"
     const val APP_PREFERENCES_STAY = "APP_PREFERENCES_STAY_BOOL"
     const val APP_PREFERENCES_PUSHES = "APP_PREFERENCES_PUSHES_BOOL"
@@ -14,7 +15,7 @@ object Constants {
     const val APP_BD_PATHS_BASE_PARAMETERS = "${APP_BD_PATHS_BASE}/BaseParameters"
     const val APP_BD_PATHS_SCHEDULE_BASE = "${APP_BD_PATHS_BASE}/BaseSchedules"
     const val APP_BD_PATHS_SCHEDULE_CURRENT = "${APP_BD_PATHS_BASE}/CurrentSchedules"
-    const val APP_BD_PATHS_VERSION = "${APP_BD_PATHS_BASE}/Version"
+    const val APP_BD_PATHS_SCHEDULE_VERSION = "${APP_BD_PATHS_SCHEDULE_CURRENT}/version"
 
     const val APP_TOAST_WEAK_CONNECTION = "Looks like there are some problems with connection..."
     const val APP_TOAST_NOT_SIGNED_IN = "You aren't signed in yet."
@@ -31,6 +32,8 @@ object Constants {
     const val APP_TOAST_NOTIFICATIONS_NOT_ALLOWED = "The application doesn't have notification permissions."
 
     const val APP_KEY_CHANNEL_ID = "notifications_channel_id_202"
+
+    const val APP_LINK_CONTACT_US = "https://console.firebase.google.com/u/0/project/fcm-learn-72e92"
 
     val APP_CALENDER_DAY_OF_WEEK = listOf("вс", "пн", "вт", "ср", "чт", "пт", "сб")
 }

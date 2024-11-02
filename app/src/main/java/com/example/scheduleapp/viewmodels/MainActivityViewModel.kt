@@ -209,7 +209,9 @@ class MainActivityViewModel @Inject constructor(
 
     fun <T> editPreferences(preference: String, value: T) {
         val sEdit: SharedPreferences.Editor
-        if (preference.contains("_BOOL")) {
+        if (preference.contains("_LONG")) {
+            sEdit = sPreferences.edit().putLong(preference, (value as Long))
+        } else if (preference.contains("_BOOL")) {
             sEdit = sPreferences.edit().putBoolean(preference, (value as Boolean))
         } else {
             sEdit = sPreferences.edit().putString(preference, (value as String))
@@ -218,7 +220,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun <T> getPreference(preference: String, defValue: T): T {
-        if (preference.contains("_BOOL")) {
+        if (preference.contains("_LONG")) {
+            return (sPreferences.getLong(preference, (defValue as Long)) as T)
+        } else if (preference.contains("_BOOL")) {
             return (sPreferences.getBoolean(preference, (defValue as Boolean)) as T)
         } else {
             return (sPreferences.getString(preference, (defValue as String)) as T)

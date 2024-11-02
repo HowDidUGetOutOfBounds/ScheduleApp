@@ -16,6 +16,7 @@ import com.example.scheduleapp.UI.MainActivity.Companion.REQUEST_CODE_LOC_NOTIFI
 import com.example.scheduleapp.adapters.MainScreenAdapter
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
+import com.example.scheduleapp.data.Constants.APP_PREFERENCES_SCHEDULE_VERSION
 import com.example.scheduleapp.data.Constants.APP_TOAST_SCHEDULE_DOWNLOAD_FAILED
 import com.example.scheduleapp.data.DownloadStatus
 import com.example.scheduleapp.data.FlatScheduleDetailed
@@ -98,6 +99,10 @@ class FragmentContainer : Fragment() {
                 }
                 is DownloadStatus.Success<FlatScheduleDetailed> -> {
                     binding.progressBar.visibility = View.GONE
+                    viewModel.editPreferences(
+                        APP_PREFERENCES_SCHEDULE_VERSION,
+                        viewModel.getSchedule().version
+                    )
                     setupViewPager2()
                 }
                 else -> {

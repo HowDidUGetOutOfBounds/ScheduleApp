@@ -20,14 +20,13 @@ import com.example.scheduleapp.R
 import com.example.scheduleapp.UI.MainActivity
 import com.example.scheduleapp.UI.MainActivity.Companion.REQUEST_CODE_LOC_NOTIFICATION_MAIN_THREAD
 import com.example.scheduleapp.data.Constants
-import com.example.scheduleapp.data.Constants.APP_BD_PATHS_VERSION
+import com.example.scheduleapp.data.Constants.APP_BD_PATHS_SCHEDULE_VERSION
 import com.example.scheduleapp.data.Constants.APP_KEY_CHANNEL_ID
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_SCHEDULE_VERSION
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -40,7 +39,6 @@ class AlarmReceiver : BroadcastReceiver() {
     private lateinit var fDatabase: FirebaseDatabase
     private lateinit var sPreferences: SharedPreferences
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("Not_Debugger", "Receiver transaction began.")
 
@@ -49,7 +47,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         var currVersion: Long
 
-        val mainTask = downloadByReference(APP_BD_PATHS_VERSION)
+        val mainTask = downloadByReference(APP_BD_PATHS_SCHEDULE_VERSION)
         var listener: OnCompleteListener<DataSnapshot>?
         val timer = setTimeout(5000L) {
             Log.d("Not_Debugger", "Ran out of time to download.")
@@ -88,7 +86,6 @@ class AlarmReceiver : BroadcastReceiver() {
         return timer
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun sendNotification(context:Context){
         val name: CharSequence = "MyNotification"
         val description = "My notification channel description"

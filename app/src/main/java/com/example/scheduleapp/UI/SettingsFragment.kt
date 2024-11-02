@@ -3,7 +3,9 @@ package com.example.scheduleapp.UI
 import android.Manifest
 import android.app.AlarmManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.example.scheduleapp.R
+import com.example.scheduleapp.data.Constants.APP_LINK_CONTACT_US
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_GROUP
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_PUSHES
 import com.example.scheduleapp.data.Constants.APP_PREFERENCES_STAY
@@ -23,6 +26,7 @@ import com.example.scheduleapp.data.Constants.APP_TOAST_NOTIFICATIONS_NOT_ALLOWE
 import com.example.scheduleapp.databinding.FragmentSettingsBinding
 import com.example.scheduleapp.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
@@ -102,6 +106,15 @@ class SettingsFragment : Fragment() {
 
         binding.logoutTrigger.setOnClickListener {
             logOut()
+        }
+
+        binding.contactUsTextView.setOnClickListener {
+            var url = APP_LINK_CONTACT_US
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "http://$url"
+            }
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(browserIntent)
         }
     }
 
