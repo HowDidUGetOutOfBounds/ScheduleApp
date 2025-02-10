@@ -8,17 +8,14 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.scheduleapp.UI.MainActivity.Companion.REQUEST_CODE_LOC_NOTIFICATION_ID
 import com.example.scheduleapp.adapters.MainScreenAdapter.Companion.PAGE_COUNT
 import com.example.scheduleapp.data.*
-import com.example.scheduleapp.data.Constants.APP_BD_PATHS_BASE_PARAMETERS
-import com.example.scheduleapp.data.Constants.APP_BD_PATHS_SCHEDULE_CURRENT
 import com.example.scheduleapp.data.Constants.APP_CALENDER_DAY_OF_WEEK
 import com.example.scheduleapp.data.Constants.APP_TOAST_WEAK_CONNECTION
 import com.example.scheduleapp.models.FirebaseRepository
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.database.DataSnapshot
-import com.google.gson.Gson
+import com.example.scheduleapp.retrofit.ScheduleService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import java.util.*
@@ -28,7 +25,8 @@ import kotlin.collections.ArrayList
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val rImplementation: FirebaseRepository,
-    private val sPreferences: SharedPreferences
+    private val sPreferences: SharedPreferences,
+    private val sService: ScheduleService
 ) : ViewModel() {
     var authState: MutableLiveData<AuthenticationStatus> = MutableLiveData()
     var paramsDownloadState: MutableLiveData<DownloadStatus<FlatScheduleParameters>> = MutableLiveData()
@@ -38,7 +36,6 @@ class MainActivityViewModel @Inject constructor(
     private var flatScheduleDetailed = FlatScheduleDetailed()
 
     private lateinit var timer: Timer
-    private lateinit var listenerToRemove: OnCompleteListener<DataSnapshot>
 
     init {
         Log.d("TAG", "Created a view model for the outer app segment successfully.")
@@ -60,60 +57,40 @@ class MainActivityViewModel @Inject constructor(
         paramsDownloadState.value = DownloadStatus.Progress
         setTimeout(5000L, true)
 
-        listenerToRemove = getDownloadListener(true)
-        rImplementation.downloadByReference(APP_BD_PATHS_BASE_PARAMETERS)
-            .addOnCompleteListener(listenerToRemove)
+        viewModelScope.launch {
+            try {
+                val scheduleResponse = sService.getScheduleParameters()
+                flatScheduleParameters = scheduleResponse
+                Log.d("APP_DEBUGGER_SCHEDULE", "Download successful: $scheduleResponse.")
+                paramsDownloadState.value = DownloadStatus.Success(scheduleResponse)
+            } catch (e: Exception) {
+                Log.d("APP_DEBUGGER_SCHEDULE", "Failed attempt to download and convert schedule data. Error = ${e.message}.")
+                paramsDownloadState.value = DownloadStatus.Error(e.message!!)
+            } finally {
+                timer.cancel()
+                Log.d("APP_DEBUGGER_SCHEDULE", "End of an attempt to download schedule data.")
+            }
+        }
     }
 
     fun downloadSchedule() {
         scheduleDownloadState.value = DownloadStatus.Progress
         setTimeout(8000L, false)
 
-        listenerToRemove = getDownloadListener(false)
-        rImplementation.downloadByReference(APP_BD_PATHS_SCHEDULE_CURRENT)
-            .addOnCompleteListener(listenerToRemove)
-    }
-
-    private fun getDownloadListener(onlyParams: Boolean): OnCompleteListener<DataSnapshot> {
-        val listener = OnCompleteListener<DataSnapshot> { task ->
-            if (task.isSuccessful) {
+        viewModelScope.launch {
+            try {
+                val scheduleResponse = sService.getScheduleCurrent()
+                flatScheduleDetailed = scheduleResponse.scheduleCurrent!!
+                Log.d("APP_DEBUGGER_SCHEDULE", "Download successful: $scheduleResponse.")
+                scheduleDownloadState.value = DownloadStatus.Success(scheduleResponse.scheduleCurrent!!)
+            } catch (e: Exception) {
+                Log.d("APP_DEBUGGER_SCHEDULE", "Failed attempt to download and convert schedule data. Error = ${e.message}.")
+                scheduleDownloadState.value = DownloadStatus.Error(e.message!!)
+            } finally {
                 timer.cancel()
-                Log.d("TAG", "Successfully downloaded data from the database:")
-                Log.d("TAG", task.result.value.toString())
-
-                try {
-                    if (onlyParams) {
-                        flatScheduleParameters = Gson().fromJson(
-                            task.result.value.toString(),
-                            FlatScheduleParameters::class.java
-                        )
-                        paramsDownloadState.value = DownloadStatus.Success(flatScheduleParameters)
-                    } else {
-                        flatScheduleDetailed = Gson().fromJson(
-                            task.result.value.toString(),
-                            FlatScheduleDetailed::class.java
-                        )
-                        scheduleDownloadState.value = DownloadStatus.Success(flatScheduleDetailed)
-                    }
-                    Log.d("TAG", "Successfully read and converted the data.")
-                } catch (e: Exception) {
-                    if (onlyParams) {
-                        paramsDownloadState.value = DownloadStatus.Error(e.message.toString())
-                    } else {
-                        scheduleDownloadState.value = DownloadStatus.Error(e.message.toString())
-                    }
-                    Log.d("TAG", "Failed to convert the data: ${e.message}")
-                }
-            } else {
-                if (onlyParams) {
-                    paramsDownloadState.value = DownloadStatus.Error("Connection or network error.")
-                } else {
-                    scheduleDownloadState.value = DownloadStatus.Error("Connection or network error.")
-                }
-                Log.d("TAG", "Failed to download data from the database.")
+                Log.d("APP_DEBUGGER_SCHEDULE", "End of an attempt to download schedule data.")
             }
         }
-        return listener
     }
 
     private fun setTimeout(time: Long, onlyParams: Boolean) {

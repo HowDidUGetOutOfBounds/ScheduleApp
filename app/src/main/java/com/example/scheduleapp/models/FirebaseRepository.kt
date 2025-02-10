@@ -6,9 +6,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 
 interface FirebaseRepository {
-
-    fun downloadByReference(reference: String): Task<DataSnapshot>
-
     fun getCurrentUser(): FirebaseUser?
 
     fun sendResetMessage(email: String): Task<Void>

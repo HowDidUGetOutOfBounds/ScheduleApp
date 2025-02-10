@@ -1,5 +1,13 @@
 package com.example.scheduleapp.data
 
+data class FlatScheduleAnswer<T>(
+    var scheduleCurrent : T? = null,
+    var scheduleStaged : T? = null,
+    var comparisonGeneral : Boolean? = null,
+    var comparisonSpecific : Boolean? = null
+)
+
+
 data class FlatScheduleDetailed (
     var scheduleDay   : ArrayList<Data_IntArray>   = arrayListOf(),
     var scheduleGroup : ArrayList<Data_IntArray> = arrayListOf(),

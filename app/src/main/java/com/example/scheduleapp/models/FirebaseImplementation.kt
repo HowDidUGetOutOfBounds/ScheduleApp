@@ -8,13 +8,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 
 class FirebaseImplementation(
-    private val fDatabase: FirebaseDatabase,
     private val fAuth: FirebaseAuth
 ) : FirebaseRepository {
-    override fun downloadByReference(reference: String): Task<DataSnapshot> {
-        return fDatabase.getReference(reference).get()
-    }
-
     override fun getCurrentUser(): FirebaseUser? {
         return fAuth.currentUser
     }
