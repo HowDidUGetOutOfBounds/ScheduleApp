@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 @Suppress("DEPRECATION")
 class ScheduleServiceInstance {
     companion object {
-        fun <T> createService(serviceClass: Class<T>, timeOutPeriod: Long = 10000L): T {
+        fun <T> createService(serviceClass: Class<T>, timeOutPeriod: Long = 16000L): T {
             val serverLink = BuildConfig.API_LINK
 
             val retrofit: Retrofit =

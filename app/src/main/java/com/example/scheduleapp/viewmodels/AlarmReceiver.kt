@@ -35,7 +35,7 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("Not_Debugger", "Receiver transaction began.")
 
-        sService = ScheduleServiceInstance.createService(ScheduleService::class.java, 5000L)
+        sService = ScheduleServiceInstance.createService(ScheduleService::class.java, 8000L)
         sPreferences = context.getSharedPreferences(Constants.APP_PREFERENCES, Context.MODE_PRIVATE)
 
         downloadScheduleVersion(context)
